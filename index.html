@@ -291,12 +291,12 @@
         }
         
         .message-avatar {
-            width: 45px;
-            height: 45px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             overflow: hidden;
-            border: 2px solid var(--gold);
-            box-shadow: 0 0 15px rgba(248, 178, 41, 0.6);
+            border: 1px solid var(--gold);
+            box-shadow: 0 0 8px rgba(248, 178, 41, 0.4);
             position: relative;
             z-index: 5005;
             flex-shrink: 0;
@@ -317,10 +317,10 @@
         
         .message-name {
             color: var(--gold);
-            font-size: 0.85rem;
+            font-size: 0.6rem;
             font-weight: bold;
-            margin-bottom: 6px;
-            margin-left: 2px;
+            margin-bottom: 3px;
+            margin-left: 1px;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
             position: relative;
             z-index: 5012;
@@ -329,14 +329,14 @@
         .message-text {
             background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
             color: #2c3e50;
-            padding: 14px 18px;
-            border-radius: 16px;
-            font-size: 1.08rem;
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
             font-weight: 500;
-            line-height: 1.2;
+            line-height: 1.1;
             box-shadow: 
-                0 8px 25px rgba(0,0,0,0.15),
-                0 3px 10px rgba(0,0,0,0.1);
+                0 4px 15px rgba(0,0,0,0.1),
+                0 2px 6px rgba(0,0,0,0.08);
             display: inline-block;
             white-space: nowrap;
             position: relative;
@@ -346,20 +346,20 @@
         
         @media (max-width: 768px) {
             .message-text {
-                font-size: 0.88rem;
-                padding: 10px 14px;
-                line-height: 1.2;
-                max-width: 157px;
+                font-size: 0.45rem;
+                padding: 4px 7px;
+                line-height: 1.0;
+                max-width: 80px;
                 word-wrap: break-word;
             }
             
             .message-avatar {
-                width: 35px;
-                height: 35px;
+                width: 18px;
+                height: 18px;
             }
             
             .message-name {
-                font-size: 0.7rem;
+                font-size: 0.5rem;
             }
             
             .fullscreen-message {
@@ -621,15 +621,15 @@
         
         @media (max-width: 360px) {
             .message-text { 
-                font-size: 0.74rem; 
-                padding: 6px 10px;
-                max-width: 118px;
+                font-size: 0.38rem; 
+                padding: 3px 5px;
+                max-width: 60px;
                 word-wrap: break-word;
             }
             
             .message-avatar {
-                width: 28px;
-                height: 28px;
+                width: 14px;
+                height: 14px;
             }
             
             .message-name {
@@ -653,15 +653,15 @@
             #final-message { font-size: 1.3rem; }
             #final-sub-message { font-size: 0.9rem; }
             .message-text { 
-                font-size: 0.83rem; 
-                padding: 8px 12px;
-                max-width: 137px;
+                font-size: 0.42rem; 
+                padding: 3px 6px;
+                max-width: 70px;
                 word-wrap: break-word;
             }
             
             .message-avatar {
-                width: 30px;
-                height: 30px;
+                width: 16px;
+                height: 16px;
             }
             
             .fullscreen-message {
