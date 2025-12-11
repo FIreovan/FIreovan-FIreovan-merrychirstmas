@@ -17,15 +17,7 @@
         body {
             margin: 0;
             padding: 0;
-            background: linear-gradient(135deg, 
-                #8B0000 0%,
-                #A0153E 25%,
-                #5D0E28 50%,
-                #8B0000 75%,
-                #6B0F1A 100%
-            );
-            background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
+            background: #000;
             color: var(--snow);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             overflow: hidden;
@@ -36,10 +28,56 @@
             position: relative;
         }
         
+        body.tree-active {
+            background: linear-gradient(135deg, 
+                #8B0000 0%,
+                #A0153E 25%,
+                #5D0E28 50%,
+                #8B0000 75%,
+                #6B0F1A 100%
+            );
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+        
         @keyframes gradientShift {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
+        }
+        
+        /* Welcome Screen Styles */
+        #welcome-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 7000;
+            cursor: pointer;
+            transition: opacity 0.8s ease;
+        }
+        
+        #welcome-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .welcome-text {
+            color: #fff;
+            font-size: 2rem;
+            text-align: center;
+            animation: welcomePulse 2s ease-in-out infinite;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+        
+        @keyframes welcomePulse {
+            0%, 100% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
         }
 
         #snow-container {
@@ -673,32 +711,17 @@
 <body>
     <div id="snow-container"></div>
     
-    <div id="music-control" onclick="toggleMusic()">🎵</div>
+    <!-- Welcome Screen -->
+    <div id="welcome-screen" onclick="enterTreeScene()">
+        <div class="welcome-text">點擊頁面</div>
+    </div>
+    
+    <div id="music-control" onclick="toggleMusic()" style="display: none;">🎵</div>
     <audio id="bgm" loop>
         <source src="christmas-music.mp3" type="audio/mpeg">
     </audio>
 
-    <!-- Main Game -->
-    <div id="main-game" class="container">
-        <h2 id="gift-title">請選擇聖誕禮物</h2>
-        <div class="gifts-container">
-            <div class="gift-box" onclick="openGift(0)"></div>
-            <div class="gift-box" onclick="openGift(1)"></div>
-        </div>
-    </div>
-
-
-
-    <!-- Modals -->
-    <div id="modal-fail" class="modal">
-        <div class="modal-content">
-            <h2>你選錯了</h2>
-            <p>2選1都能選錯，你給我聖誕禮物算了！</p>
-            <button onclick="tryAgain()">再獲得一次機會</button>
-        </div>
-    </div>
-
-    <!-- Final Scene -->
+    <!-- Final Scene (Tree) -->
     <div id="final-scene">
         <div id="final-message">聖誕快樂！🎄</div>
         <div id="final-sub-message">這是Ovan送給你的聖誕樹</div>
@@ -742,54 +765,27 @@
                 isPlaying = true;
             }
         }
-
-        const winningGiftIndex = Math.floor(Math.random() * 2);
-        let hasWon = false;
-
-        function openGift(index) {
-            if (hasWon) return;
+        
+        function enterTreeScene() {
+            const welcomeScreen = document.getElementById('welcome-screen');
+            welcomeScreen.classList.add('hidden');
             
-            const giftBox = document.querySelectorAll('.gift-box')[index];
-            giftBox.classList.add('opening');
-
-            if (index === winningGiftIndex) {
-                hasWon = true;
-                setTimeout(() => {
-                    document.getElementById('main-game').style.display = 'none';
-                    showFinalScene();
-                }, 500);
-            } else {
-                setTimeout(() => {
-                    giftBox.classList.remove('opening');
-                    showModal('modal-fail');
-                }, 500);
-            }
-        }
-
-
-
-        function showModal(id) {
-            document.getElementById(id).classList.add('active');
-        }
-
-        function closeModal(id) {
-            document.getElementById(id).classList.remove('active');
-        }
-        
-        function giveGiftDirectly() {
-            closeModal('modal-fail');
-            document.getElementById('main-game').style.display = 'none';
-            showFinalScene();
-        }
-        
-        function tryAgain() {
-            closeModal('modal-fail');
-            // 重置禮物盒狀態
-            const giftBoxes = document.querySelectorAll('.gift-box');
-            giftBoxes.forEach(box => {
-                box.classList.remove('opening');
-                box.style.pointerEvents = 'auto';
-            });
+            // 切換背景
+            document.body.classList.add('tree-active');
+            
+            // 顯示音樂控制
+            document.getElementById('music-control').style.display = 'block';
+            
+            // 嘗試自動播放音樂
+            bgm.play().then(() => {
+                musicBtn.textContent = '🎵';
+                isPlaying = true;
+            }).catch(e => console.log('Audio autoplay failed:', e));
+            
+            setTimeout(() => {
+                welcomeScreen.style.display = 'none';
+                showFinalScene();
+            }, 800);
         }
 
         function showFinalScene() {
