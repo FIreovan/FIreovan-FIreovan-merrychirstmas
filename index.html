@@ -353,9 +353,9 @@
             background: #000;
             display: none;
             z-index: 5000;
-            /* allow internal scrolling for mobile columns */
-            overflow: auto;
-            -webkit-overflow-scrolling: touch;
+            /* disable page scrolling — carousel will control movement */
+            overflow: hidden;
+            -webkit-overflow-scrolling: auto;
         }
         
         .fullscreen-message {
@@ -380,7 +380,7 @@
             gap: 14px;
             align-items: center;
             max-height: 86vh;
-            overflow-y: auto;
+            overflow-y: hidden; /* disable vertical scrolling here */
             padding: 12px;
             box-sizing: border-box;
             width: 92vw;
@@ -1059,9 +1059,9 @@
         function showGoodbye() {
             const goodbyeScreen = document.getElementById('goodbye-screen');
             goodbyeScreen.style.display = 'flex';
-            // ensure scrolling is enabled on mobile
-            goodbyeScreen.style.overflow = 'auto';
-            goodbyeScreen.style['-webkit-overflow-scrolling'] = 'touch';
+            // keep page scrolling disabled; carousel will handle navigation
+            goodbyeScreen.style.overflow = 'hidden';
+            goodbyeScreen.style['-webkit-overflow-scrolling'] = 'auto';
             showAllBlessingsOnBlackScreen();
         }
         
