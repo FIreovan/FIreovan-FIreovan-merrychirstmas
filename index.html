@@ -420,28 +420,41 @@
             height: 100%;
             transition: transform 320ms ease;
             will-change: transform;
+            align-items: center; /* vertical center */
         }
 
+        /* Ensure slides stretch full width but messages themselves align left/right */
         .no-scroll-carousel .carousel-slide {
             min-width: 100%;
             height: 100%;
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start; /* allow message to sit at left/right inside slide */
             box-sizing: border-box;
-            padding: 12px;
+            padding: 12px 16px;
         }
 
+        /* Each slide contains a .column-message which we use to align left or right */
         .no-scroll-carousel .carousel-slide .fullscreen-message {
             position: static;
             transform: none !important;
             opacity: 1 !important;
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start; /* default to left */
             gap: 10px;
             width: 100%;
+            box-sizing: border-box;
+            padding: 0 6px;
         }
+
+        /* For right-aligned slides place the content at end */
+        .no-scroll-carousel .carousel-slide .column-message.align-right { justify-content: flex-end; }
+        .no-scroll-carousel .carousel-slide .column-message.align-left { justify-content: flex-start; }
+
+        /* hide navigation buttons on mobile (we autoplay) */
+        .no-scroll-carousel .nav-btn { display: none; }
+
 
         .no-scroll-carousel .nav-btn {
             position: absolute;
