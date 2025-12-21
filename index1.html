@@ -387,6 +387,70 @@
             z-index: 6000;
         }
 
+        /* Mobile carousel: show one message per screen without page scrolling */
+        .no-scroll-carousel {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            box-sizing: border-box;
+            padding: 12px;
+        }
+
+        .no-scroll-carousel .carousel-track {
+            display: flex;
+            height: 100%;
+            transition: transform 320ms ease;
+            will-change: transform;
+        }
+
+        .no-scroll-carousel .carousel-slide {
+            min-width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            padding: 12px;
+        }
+
+        .no-scroll-carousel .carousel-slide .fullscreen-message {
+            position: static;
+            transform: none !important;
+            opacity: 1 !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .no-scroll-carousel .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.6);
+            color: white;
+            border: none;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 6010;
+            cursor: pointer;
+        }
+
+        .no-scroll-carousel .nav-btn:active { transform: translateY(-50%) scale(0.96); }
+
+        .no-scroll-carousel .nav-prev { left: 14px; }
+        .no-scroll-carousel .nav-next { right: 14px; }
+
         .column-message {
             position: relative;
             left: auto !important;
@@ -1063,31 +1127,94 @@
             const isMobile = browserInfo.isPhone || window.innerWidth < 768;
 
             if (isMobile) {
-                // On mobile: vertical scrollable column so nothing overlaps and everything is readable
-                const column = document.createElement('div');
-                column.className = 'message-column';
+                // On mobile: show a full-screen carousel (one message per view) without page scrolling
+                const carousel = document.createElement('div');
+                carousel.className = 'no-scroll-carousel';
+
+                const track = document.createElement('div');
+                track.className = 'carousel-track';
+
+                let currentIndex = 0;
 
                 blessings.forEach((blessing, index) => {
-                    const messageDiv = document.createElement('div');
-                    messageDiv.className = 'fullscreen-message column-message';
-                    messageDiv.innerHTML = `
-                        <div class="message-avatar">
-                            <img src="avatar.png.jpg" onerror="this.src='https://cdn-icons-png.flaticon.com/512/4715/4715329.png'" alt="Avatar">
-                        </div>
-                        <div class="message-content">
-                            <div class="message-name">Ovan</div>
-                            <div class="message-text">${blessing}</div>
+                    const slide = document.createElement('div');
+                    slide.className = 'carousel-slide';
+                    slide.innerHTML = `
+                        <div class="fullscreen-message column-message">
+                            <div class="message-avatar">
+                                <img src="avatar.png.jpg" onerror="this.src='https://cdn-icons-png.flaticon.com/512/4715/4715329.png'" alt="Avatar">
+                            </div>
+                            <div class="message-content">
+                                <div class="message-name">Ovan</div>
+                                <div class="message-text">${blessing}</div>
+                            </div>
                         </div>
                     `;
-
-                    column.appendChild(messageDiv);
-                    setTimeout(() => {
-                        messageDiv.style.opacity = '1';
-                        messageDiv.style.transform = 'scale(1)';
-                    }, 120 * index + 80);
+                    track.appendChild(slide);
                 });
 
-                goodbyeScreen.appendChild(column);
+                carousel.appendChild(track);
+
+                const prev = document.createElement('button');
+                prev.className = 'nav-btn nav-prev';
+                prev.innerText = '‹';
+
+                const next = document.createElement('button');
+                next.className = 'nav-btn nav-next';
+                next.innerText = '›';
+
+                prev.addEventListener('click', () => {
+                    currentIndex = Math.max(0, currentIndex - 1);
+                    updateCarousel();
+                });
+                next.addEventListener('click', () => {
+                    currentIndex = Math.min(blessings.length - 1, currentIndex + 1);
+                    updateCarousel();
+                });
+
+                carousel.appendChild(prev);
+                carousel.appendChild(next);
+
+                goodbyeScreen.appendChild(carousel);
+                // disable goodbye screen scrolling for carousel
+                goodbyeScreen.style.overflow = 'hidden';
+
+                // simple touch swipe support
+                let startX = 0, deltaX = 0, isDragging = false;
+                track.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; isDragging = true; });
+                track.addEventListener('touchmove', (e) => {
+                    if (!isDragging) return;
+                    deltaX = e.touches[0].clientX - startX;
+                    track.style.transform = `translateX(calc(${-currentIndex * 100}% + ${deltaX}px))`;
+                });
+                track.addEventListener('touchend', () => {
+                    if (Math.abs(deltaX) > 40) {
+                        if (deltaX < 0) currentIndex = Math.min(blessings.length - 1, currentIndex + 1);
+                        else currentIndex = Math.max(0, currentIndex - 1);
+                    }
+                    deltaX = 0; isDragging = false; updateCarousel();
+                });
+
+                function updateCarousel() {
+                    track.style.transform = `translateX(-${currentIndex * 100}%)`;
+                }
+
+                // initial reveal animations per slide
+                const slides = track.children;
+                for (let i = 0; i < slides.length; i++) {
+                    (function(i) {
+                        setTimeout(() => {
+                            const msg = slides[i].querySelector('.fullscreen-message');
+                            if (msg) {
+                                msg.style.opacity = '1';
+                                msg.style.transform = 'scale(1)';
+                            }
+                        }, 120 * i + 80);
+                    })(i);
+                }
+
+                // ensure starting position
+                updateCarousel();
             } else {
                 // Desktop: use preset positions but clamp them to viewport and ensure spacing
                 const positions = [
