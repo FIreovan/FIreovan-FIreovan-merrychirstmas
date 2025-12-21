@@ -820,6 +820,49 @@
                 gap: 5px;
             }
         }
+
+        /* Mobile compact toggle button */
+        #mobile-compact-toggle {
+            display: none;
+            position: absolute;
+            left: 16px;
+            top: 16px;
+            z-index: 100;
+            background: rgba(255,255,255,0.06);
+            color: var(--snow);
+            padding: 6px 9px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+        }
+
+        @media (max-width: 768px) {
+            #mobile-compact-toggle { display: block; }
+            .fullscreen-message { max-width: calc(100% - 32px); }
+        }
+
+        /* Compact message styles (applied when user toggles compact) */
+        .compact-messages .message-text {
+            font-size: 0.86rem !important;
+            padding: 6px 9px !important;
+            max-width: 140px !important;
+            border-radius: 12px;
+        }
+
+        .compact-messages .message-avatar {
+            width: 30px !important;
+            height: 30px !important;
+        }
+
+        .compact-messages .message-name {
+            font-size: 0.82rem !important;
+        }
+
+        .compact-messages .fullscreen-message {
+            transform-origin: center;
+            transform: translate(-50%,-50%) scale(0.92) !important;
+        }
     </style>
 </head>
 <body>
@@ -831,6 +874,8 @@
     </div>
     
     <div id="music-control" onclick="toggleMusic()" style="display: none;">🎵</div>
+    <!-- Mobile compact toggle (visible on small screens) -->
+    <div id="mobile-compact-toggle" onclick="toggleCompact()" title="縮小訊息">Aa</div>
     <audio id="bgm" loop>
         <source src="christmas-music.mp3" type="audio/mpeg">
     </audio>
@@ -846,6 +891,20 @@
     <div id="goodbye-screen"></div>
 
     <script>
+        // Mobile / compact styles controlled via class on documentElement
+        function toggleCompact() {
+            document.documentElement.classList.toggle('compact-messages');
+        }
+
+        // enable compact by default on very small screens for readability
+        (function setDefaultCompactOnSmall() {
+            try {
+                if (window.innerWidth <= 420) {
+                    document.documentElement.classList.add('compact-messages');
+                }
+            } catch (e) {}
+        })();
+
         function createSnow() {
             const snowContainer = document.getElementById('snow-container');
             const snowflake = document.createElement('div');
@@ -989,8 +1048,22 @@
             ];
             
             const goodbyeScreen = document.getElementById('goodbye-screen');
-            // Desktop-only fixed positions (removed mobile/device detection)
-            const positions = [
+            // Choose positions based on viewport width so mobile users see optimized layout
+            const isMobile = window.innerWidth < 768;
+            const positions = isMobile ? [
+                // Mobile-optimized positions
+                {x: window.innerWidth * 0.05, y: window.innerHeight * 0.08},
+                {x: window.innerWidth * 0.55, y: window.innerHeight * 0.05},
+                {x: window.innerWidth * 0.02, y: window.innerHeight * 0.25},
+                {x: window.innerWidth * 0.52, y: window.innerHeight * 0.22},
+                {x: window.innerWidth * 0.08, y: window.innerHeight * 0.42},
+                {x: window.innerWidth * 0.48, y: window.innerHeight * 0.45},
+                {x: window.innerWidth * 0.05, y: window.innerHeight * 0.62},
+                {x: window.innerWidth * 0.55, y: window.innerHeight * 0.65},
+                {x: window.innerWidth * 0.1, y: window.innerHeight * 0.82},
+                {x: window.innerWidth * 0.45, y: window.innerHeight * 0.78}
+            ] : [
+                // Desktop positions
                 {x: window.innerWidth * 0.15, y: window.innerHeight * 0.15},
                 {x: window.innerWidth * 0.45, y: window.innerHeight * 0.12},
                 {x: window.innerWidth * 0.75, y: window.innerHeight * 0.18},
