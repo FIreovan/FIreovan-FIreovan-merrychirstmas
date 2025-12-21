@@ -353,7 +353,9 @@
             background: #000;
             display: none;
             z-index: 5000;
-            overflow: hidden;
+            /* allow internal scrolling for mobile columns */
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
         }
         
         .fullscreen-message {
@@ -499,7 +501,10 @@
                 0 6px 20px rgba(0,0,0,0.12),
                 0 3px 8px rgba(0,0,0,0.1);
             display: inline-block;
-            white-space: nowrap;
+            /* allow wrapping on small screens */
+            white-space: normal;
+            word-break: break-word;
+            max-width: 100%;
             position: relative;
             z-index: 5015;
             border: 1px solid rgba(0,0,0,0.1);
@@ -847,7 +852,7 @@
     <!-- Final Scene (Tree) -->
     <div id="final-scene">
         <div id="final-message">聖誕快樂！🎄</div>
-        <div id="final-sub-message">這是Ovan送給你的聖誕樹</div>
+        <div id="final-sub-message">這是Ovan送給聖誕樹</div>
         <button id="bye-btn" onclick="showGoodbye()">明年見^^</button>
     </div>
 
@@ -987,7 +992,11 @@
         }
         
         function showGoodbye() {
-            document.getElementById('goodbye-screen').style.display = 'flex';
+            const goodbyeScreen = document.getElementById('goodbye-screen');
+            goodbyeScreen.style.display = 'flex';
+            // ensure scrolling is enabled on mobile
+            goodbyeScreen.style.overflow = 'auto';
+            goodbyeScreen.style['-webkit-overflow-scrolling'] = 'touch';
             showAllBlessingsOnBlackScreen();
         }
         
