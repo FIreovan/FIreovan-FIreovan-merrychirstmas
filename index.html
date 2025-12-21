@@ -353,9 +353,7 @@
             background: #000;
             display: none;
             z-index: 5000;
-            /* disable page scrolling — carousel will control movement */
             overflow: hidden;
-            -webkit-overflow-scrolling: auto;
         }
         
         .fullscreen-message {
@@ -364,104 +362,12 @@
             align-items: flex-end;
             gap: 8px;
             opacity: 0;
-            transform: scale(0.8);
-            transition: all 0.5s ease;
+            transform-origin: center;
+            transform: translate(-50%,-50%) scale(0.8);
+            transition: all 0.45s cubic-bezier(.22,.9,.35,1);
             z-index: 5001;
-        }
-
-        /* Mobile-friendly column layout to avoid overlap */
-        .message-column {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            align-items: center;
-            max-height: 86vh;
-            overflow-y: hidden; /* disable vertical scrolling here */
-            padding: 12px;
-            box-sizing: border-box;
-            width: 92vw;
-            z-index: 6000;
-        }
-
-        /* Mobile autoplay carousel + alternating alignment (left / right) */
-        .no-scroll-carousel {
-            width: 100vw;
-            height: 100vh;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 6000;
-        }
-
-        .no-scroll-carousel .carousel-track {
-            display: flex;
-            width: 100%;
-            height: 100%;
-            transition: transform 360ms ease;
-            will-change: transform;
-            align-items: center;
-        }
-
-        .no-scroll-carousel .carousel-slide {
-            min-width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            box-sizing: border-box;
-            padding: 12px 18px;
-            justify-content: flex-start;
-        }
-
-        .no-scroll-carousel .carousel-slide .fullscreen-message {
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            position: static;
-            opacity: 1;
-            transform: none;
-            gap: 12px;
-        }
-
-        .no-scroll-carousel .carousel-slide .column-message.align-right { justify-content: flex-end; }
-        .no-scroll-carousel .carousel-slide .column-message.align-left { justify-content: flex-start; }
-
-        /* Hide nav on mobile (autoplay) */
-        .no-scroll-carousel .nav-btn { display: none; }
-
-        .column-message {
-            position: relative;
-            left: auto !important;
-            top: auto !important;
-            transform: none !important;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-        }
-
-        .message-text { word-break: break-word; max-width: 100%; }
-
-        /* Force consistent phone styling when a mobile browser is detected */
-        html.is-phone .message-text {
-            font-size: 1rem;
-            padding: 8px 12px;
-            border-radius: 12px;
-            max-width: 100%;
-        }
-        html.is-phone .message-avatar { width: 36px; height: 36px; }
-        html.is-phone .message-name { font-size: 0.95rem; }
-        html.is-phone .message-column { width: 94vw; padding: 10px; gap: 12px; }
-
-        /* small tweak for very narrow phones */
-        @media (max-width: 420px) {
-            html.is-phone .message-text { font-size: 0.95rem; padding: 7px 10px; }
-            html.is-phone .message-avatar { width: 34px; height: 34px; }
+            pointer-events: none;
+            max-width: calc(100% - 20px);
         }
         
         .message-avatar {
@@ -559,17 +465,16 @@
             color: #2c3e50;
             padding: 13px 21px;
             border-radius: 15px;
-            font-size: 1.26rem;
+            font-size: 1.1rem;
             font-weight: 500;
             line-height: 1.2;
             box-shadow: 
                 0 6px 20px rgba(0,0,0,0.12),
                 0 3px 8px rgba(0,0,0,0.1);
             display: inline-block;
-            /* allow wrapping on small screens */
             white-space: normal;
             word-break: break-word;
-            max-width: 100%;
+            max-width: 320px;
             position: relative;
             z-index: 5015;
             border: 1px solid rgba(0,0,0,0.1);
@@ -577,24 +482,40 @@
         
         @media (max-width: 768px) {
             .message-text {
-                font-size: 1.12rem;
-                padding: 10px 16px;
-                line-height: 1.15;
-                max-width: 200px;
-                word-wrap: break-word;
+                font-size: 1.0rem;
+                padding: 8px 12px;
+                line-height: 1.12;
+                max-width: 180px;
             }
             
             .message-avatar {
-                width: 40px;
-                height: 40px;
+                width: 36px;
+                height: 36px;
             }
             
             .message-name {
-                font-size: 1.0rem;
+                font-size: 0.95rem;
             }
             
             .fullscreen-message {
                 gap: 6px;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .message-text {
+                font-size: 0.95rem;
+                padding: 7px 10px;
+                max-width: 150px;
+            }
+
+            .message-avatar {
+                width: 34px;
+                height: 34px;
+            }
+
+            .message-name {
+                font-size: 0.9rem;
             }
         }
 
@@ -917,7 +838,7 @@
     <!-- Final Scene (Tree) -->
     <div id="final-scene">
         <div id="final-message">聖誕快樂！🎄</div>
-        <div id="final-sub-message">這是Ovan送給聖誕樹</div>
+        <div id="final-sub-message">這是Ovan送給你的聖誕樹</div>
         <button id="bye-btn" onclick="showGoodbye()">明年見^^</button>
     </div>
 
@@ -1057,192 +978,108 @@
         }
         
         function showGoodbye() {
-            const goodbyeScreen = document.getElementById('goodbye-screen');
-            goodbyeScreen.style.display = 'flex';
-            // keep page scrolling disabled; carousel will handle navigation
-            goodbyeScreen.style.overflow = 'hidden';
-            goodbyeScreen.style['-webkit-overflow-scrolling'] = 'auto';
+            document.getElementById('goodbye-screen').style.display = 'flex';
             showAllBlessingsOnBlackScreen();
         }
         
         function showAllBlessingsOnBlackScreen() {
             const blessings = [
-                "記得按時吃飯喔", "天冷了多穿點", "不要給自己太大壓力", "你已經做得很好了", "多喝熱水", 
-                "願你今天也有個好心情", "心情要保持愉快", "今天的你也超厲害的", "別太在意別人的看法", "Merry Christmas 各位"
+                "記得按時吃飯喔", "天冷了多穿點", "不要給自己太大壓力", "早點休息", "多喝熱水", 
+                "出門注意安全", "心情要保持愉快", "別太累了", "我一直都在", "照顧好自己"
             ];
-
+            
             const goodbyeScreen = document.getElementById('goodbye-screen');
-            goodbyeScreen.innerHTML = '';
-            // detect browser and phone-like user agents; add classes to <html> for easier styling
-            function detectBrowserAndPhone() {
-                const ua = navigator.userAgent || '';
-                let browser = 'other';
-                // Chrome on iOS uses 'CriOS', Chrome desktop/Android has 'Chrome', exclude Edge/Opera
-                if (/CriOS|Chrome/i.test(ua) && !/Edg|Edge|OPR|Opera/i.test(ua)) browser = 'chrome';
-                else if (/Edg|Edge/i.test(ua)) browser = 'edge';
-                else if (/OPR|Opera/i.test(ua)) browser = 'opera';
-                else if (/Firefox|FxiOS/i.test(ua)) browser = 'firefox';
-                else if (/Safari/i.test(ua) && /Mobile|iPhone|iPad/i.test(ua)) browser = 'safari';
-
-                // some browsers expose brands via userAgentData
+            function isMobileDevice() {
                 try {
-                    if (navigator.userAgentData && navigator.userAgentData.brands) {
-                        const brands = navigator.userAgentData.brands.map(b => b.brand.toLowerCase());
-                        if (brands.some(b => b.includes('chrome'))) browser = 'chrome';
-                        if (brands.some(b => b.includes('safari'))) browser = 'safari';
+                    if (navigator.userAgentData && navigator.userAgentData.mobile !== undefined) {
+                        return navigator.userAgentData.mobile;
                     }
                 } catch (e) {}
-
-                // determine mobile-ish (phone) status: look for mobile tokens OR touch + narrow viewport
-                const isPhoneUA = /Mobi|Android|iPhone|iPad|iPod|Phone/i.test(ua);
-                const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints && navigator.maxTouchPoints > 0);
-                const isPhoneViewport = window.innerWidth <= 900; // be generous for small tablets in portrait
-                const isPhone = isPhoneUA || (isTouch && isPhoneViewport);
-
-                return { browser, isPhone };
+                return /Mobi|Android|iPhone|iPad|iPod|Phone/i.test(navigator.userAgent) || ('ontouchstart' in window) || window.innerWidth < 768;
             }
+            const isMobile = isMobileDevice();
+            document.documentElement.classList.toggle('is-mobile', isMobile);
 
-            const browserInfo = detectBrowserAndPhone();
-            // expose classes for CSS (e.g., html.is-phone, html.browser-chrome)
-            document.documentElement.classList.toggle('is-phone', !!browserInfo.isPhone);
-            document.documentElement.classList.add('browser-' + browserInfo.browser);
-
-            // treat as mobile if viewport or browser indicates phone
-            const isMobile = browserInfo.isPhone || window.innerWidth < 768;
-
-            if (isMobile) {
-                // On mobile: autoplay carousel that shows one message per slide
-                const carousel = document.createElement('div');
-                carousel.className = 'no-scroll-carousel';
-
-                const track = document.createElement('div');
-                track.className = 'carousel-track';
-
-                const autoplayDelay = 2800; // ms
-                let currentIndex = 0;
-                let autoplayTimer = null;
-
-                blessings.forEach((blessing, index) => {
-                    const slide = document.createElement('div');
-                    slide.className = 'carousel-slide';
-
-                    // alternating left/right inside each slide
-                    const alignClass = (index % 2 === 0) ? 'align-left' : 'align-right';
-
-                    slide.innerHTML = `
-                        <div class="fullscreen-message column-message ${alignClass}">
-                            <div class="message-avatar">
-                                <img src="avatar.png.jpg" onerror="this.src='https://cdn-icons-png.flaticon.com/512/4715/4715329.png'" alt="Avatar">
-                            </div>
-                            <div class="message-content">
-                                <div class="message-name">Ovan</div>
-                                <div class="message-text">${blessing}</div>
-                            </div>
+            // 使用固定位置陣列，確保絕對不重疊並在手機屏幕中完美展示
+            const positions = isMobile ? [
+                // 手機版優化位置 - 確保所有訊息都在可視區域內
+                {x: window.innerWidth * 0.05, y: window.innerHeight * 0.08},
+                {x: window.innerWidth * 0.55, y: window.innerHeight * 0.05},
+                {x: window.innerWidth * 0.02, y: window.innerHeight * 0.25},
+                {x: window.innerWidth * 0.52, y: window.innerHeight * 0.22},
+                {x: window.innerWidth * 0.08, y: window.innerHeight * 0.42},
+                {x: window.innerWidth * 0.48, y: window.innerHeight * 0.45},
+                {x: window.innerWidth * 0.05, y: window.innerHeight * 0.62},
+                {x: window.innerWidth * 0.55, y: window.innerHeight * 0.65},
+                {x: window.innerWidth * 0.1, y: window.innerHeight * 0.82},
+                {x: window.innerWidth * 0.45, y: window.innerHeight * 0.78}
+            ] : [
+                // 桌面版 3x4 固定位置
+                {x: window.innerWidth * 0.15, y: window.innerHeight * 0.15},
+                {x: window.innerWidth * 0.45, y: window.innerHeight * 0.12},
+                {x: window.innerWidth * 0.75, y: window.innerHeight * 0.18},
+                {x: window.innerWidth * 0.2, y: window.innerHeight * 0.35},
+                {x: window.innerWidth * 0.5, y: window.innerHeight * 0.38},
+                {x: window.innerWidth * 0.8, y: window.innerHeight * 0.32},
+                {x: window.innerWidth * 0.25, y: window.innerHeight * 0.58},
+                {x: window.innerWidth * 0.55, y: window.innerHeight * 0.62},
+                {x: window.innerWidth * 0.1, y: window.innerHeight * 0.78},
+                {x: window.innerWidth * 0.7, y: window.innerHeight * 0.82}
+            ];
+            
+            blessings.forEach((blessing, index) => {
+                setTimeout(() => {
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = 'fullscreen-message';
+                    messageDiv.innerHTML = `
+                        <div class="message-avatar">
+                            <img src="avatar.png.jpg" onerror="this.src='https://cdn-icons-png.flaticon.com/512/4715/4715329.png'" alt="Avatar">
+                        </div>
+                        <div class="message-content">
+                            <div class="message-name">Ovan</div>
+                            <div class="message-text">${blessing}</div>
                         </div>
                     `;
-
-                    track.appendChild(slide);
-                });
-
-                carousel.appendChild(track);
-                goodbyeScreen.appendChild(carousel);
-
-                // prevent page vertical scroll while carousel active
-                goodbyeScreen.style.overflow = 'hidden';
-
-                function showIndex(i) {
-                    currentIndex = i;
-                    track.style.transform = `translateX(-${currentIndex * 100}%)`;
-                    // reveal styling for slide
-                    const msg = track.children[currentIndex].querySelector('.fullscreen-message');
-                    if (msg) {
-                        msg.style.opacity = '1';
-                        msg.style.transform = 'scale(1)';
-                    }
-                }
-
-                function startAutoplay() {
-                    if (autoplayTimer) return;
-                    autoplayTimer = setInterval(() => {
-                        if (currentIndex < blessings.length - 1) showIndex(currentIndex + 1);
-                        else stopAutoplay();
-                    }, autoplayDelay);
-                }
-
-                function stopAutoplay() { if (autoplayTimer) { clearInterval(autoplayTimer); autoplayTimer = null; } }
-
-                // touch swipe support
-                let startX = 0, deltaX = 0, isDragging = false;
-                track.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; isDragging = true; stopAutoplay(); });
-                track.addEventListener('touchmove', (e) => {
-                    if (!isDragging) return;
-                    deltaX = e.touches[0].clientX - startX;
-                    track.style.transform = `translateX(calc(${-currentIndex * 100}% + ${deltaX}px))`;
-                });
-                track.addEventListener('touchend', () => {
-                    if (!isDragging) return;
-                    if (Math.abs(deltaX) > 40) {
-                        if (deltaX < 0 && currentIndex < blessings.length - 1) showIndex(currentIndex + 1);
-                        else if (deltaX > 0 && currentIndex > 0) showIndex(currentIndex - 1);
-                        else showIndex(currentIndex);
-                    } else showIndex(currentIndex);
-                    deltaX = 0; isDragging = false;
-                    if (currentIndex < blessings.length - 1) startAutoplay();
-                });
-
-                // kick off
-                showIndex(0);
-                setTimeout(startAutoplay, 320);
-
-            } else {
-                // Desktop: use preset positions but clamp them to viewport and ensure spacing
-                const positions = [
-                    {x: window.innerWidth * 0.15, y: window.innerHeight * 0.15},
-                    {x: window.innerWidth * 0.45, y: window.innerHeight * 0.12},
-                    {x: window.innerWidth * 0.75, y: window.innerHeight * 0.18},
-                    {x: window.innerWidth * 0.2, y: window.innerHeight * 0.35},
-                    {x: window.innerWidth * 0.5, y: window.innerHeight * 0.38},
-                    {x: window.innerWidth * 0.8, y: window.innerHeight * 0.32},
-                    {x: window.innerWidth * 0.25, y: window.innerHeight * 0.58},
-                    {x: window.innerWidth * 0.55, y: window.innerHeight * 0.62},
-                    {x: window.innerWidth * 0.1, y: window.innerHeight * 0.78},
-                    {x: window.innerWidth * 0.7, y: window.innerHeight * 0.82}
-                ];
-
-                const padding = 12;
-                const approxWidth = Math.min(360, window.innerWidth * 0.32);
-                const approxHeight = 72;
-
-                blessings.forEach((blessing, index) => {
+                    
+                    // 使用預定義的固定位置 (位置被視作元素中心)
+                    const position = positions[index];
+                    // clamp initial coords to viewport margins (center coords)
+                    let posX = Math.min(Math.max(position.x, 20), window.innerWidth - 20);
+                    let posY = Math.min(Math.max(position.y, 20), window.innerHeight - 20);
+                    messageDiv.style.left = posX + 'px';
+                    messageDiv.style.top = posY + 'px';
+                    // append before measuring
+                    goodbyeScreen.appendChild(messageDiv);
+                    // ensure element stays fully visible by adjusting with its size
+                    const rect = messageDiv.getBoundingClientRect();
+                    const halfW = rect.width / 2;
+                    const halfH = rect.height / 2;
+                    let adjX = Math.min(Math.max(posX, halfW + 8), window.innerWidth - halfW - 8);
+                    let adjY = Math.min(Math.max(posY, halfH + 8), window.innerHeight - halfH - 8);
+                    messageDiv.style.left = adjX + 'px';
+                    messageDiv.style.top = adjY + 'px';
+                    // animate from centered small -> centered normal
                     setTimeout(() => {
-                        const messageDiv = document.createElement('div');
-                        messageDiv.className = 'fullscreen-message';
-                        messageDiv.innerHTML = `
-                            <div class="message-avatar">
-                                <img src="avatar.png.jpg" onerror="this.src='https://cdn-icons-png.flaticon.com/512/4715/4715329.png'" alt="Avatar">
-                            </div>
-                            <div class="message-content">
-                                <div class="message-name">Ovan</div>
-                                <div class="message-text">${blessing}</div>
-                            </div>
-                        `;
+                        messageDiv.style.opacity = '1';
+                        messageDiv.style.transform = 'translate(-50%,-50%) scale(1)';
+                    }, 100);
+                }, index * 200);
+            });
 
-                        const pos = positions[index] || {x: window.innerWidth * 0.5, y: window.innerHeight * 0.5};
-                        let left = Math.min(Math.max(pos.x, padding), window.innerWidth - approxWidth - padding);
-                        let top = Math.min(Math.max(pos.y, padding), window.innerHeight - approxHeight - padding);
-
-                        messageDiv.style.left = left + 'px';
-                        messageDiv.style.top = top + 'px';
-
-                        goodbyeScreen.appendChild(messageDiv);
-
-                        setTimeout(() => {
-                            messageDiv.style.opacity = '1';
-                            messageDiv.style.transform = 'scale(1)';
-                        }, 100);
-                    }, index * 200);
+            // keep messages visible after resizes/orientation changes
+            function clampMessagePositions() {
+                document.querySelectorAll('.fullscreen-message').forEach(el => {
+                    const rect = el.getBoundingClientRect();
+                    const halfW = rect.width/2, halfH = rect.height/2;
+                    let left = parseFloat(el.style.left) || (rect.left + halfW);
+                    let top = parseFloat(el.style.top) || (rect.top + halfH);
+                    left = Math.min(Math.max(left, halfW + 8), window.innerWidth - halfW - 8);
+                    top = Math.min(Math.max(top, halfH + 8), window.innerHeight - halfH - 8);
+                    el.style.left = left + 'px';
+                    el.style.top = top + 'px';
                 });
             }
+            window.addEventListener('resize', clampMessagePositions);
         }
     </script>
 </body>
