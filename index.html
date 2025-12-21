@@ -387,150 +387,6 @@
             z-index: 6000;
         }
 
-        /* When using the mobile-alternating modifier, make it a full-height scrollable column
-           placed normally so users can scroll vertically and nothing overflows horizontally */
-        .message-column.mobile-alternating {
-            position: relative;
-            left: auto;
-            top: auto;
-            transform: none;
-            width: 100%;
-            height: 100%;
-            overflow-y: auto;
-            padding: 16px 10px;
-            align-items: stretch;
-            justify-content: flex-start;
-        }
-
-        /* Mobile carousel: show one message per screen without page scrolling */
-        .no-scroll-carousel {
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-            box-sizing: border-box;
-            padding: 12px;
-        }
-
-        .no-scroll-carousel .carousel-track {
-            display: flex;
-            height: 100%;
-            transition: transform 320ms ease;
-            will-change: transform;
-            align-items: center; /* vertical center */
-        }
-
-        /* Ensure slides stretch full width but messages themselves align left/right */
-        .no-scroll-carousel .carousel-slide {
-            min-width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: flex-start; /* allow message to sit at left/right inside slide */
-            box-sizing: border-box;
-            padding: 12px 16px;
-        }
-
-        /* Each slide contains a .column-message which we use to align left or right */
-        .no-scroll-carousel .carousel-slide .fullscreen-message {
-            position: static;
-            transform: none !important;
-            opacity: 1 !important;
-            display: flex;
-            align-items: center;
-            justify-content: flex-start; /* default to left */
-            gap: 10px;
-            width: 100%;
-            box-sizing: border-box;
-            padding: 0 6px;
-        }
-
-        /* For right-aligned slides place the content at end */
-        .no-scroll-carousel .carousel-slide .column-message.align-right { justify-content: flex-end; }
-        .no-scroll-carousel .carousel-slide .column-message.align-left { justify-content: flex-start; }
-
-        /* hide navigation buttons on mobile (we autoplay) */
-        .no-scroll-carousel .nav-btn { display: none; }
-
-
-        .no-scroll-carousel .nav-btn {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(0,0,0,0.6);
-            color: white;
-            border: none;
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            font-size: 1.6rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 6010;
-            cursor: pointer;
-        }
-
-        .no-scroll-carousel .nav-btn:active { transform: translateY(-50%) scale(0.96); }
-
-        .no-scroll-carousel .nav-prev { left: 14px; }
-        .no-scroll-carousel .nav-next { right: 14px; }
-
-        /* Alternating stacked layout for mobile: align messages left/right, keep bubbles within viewport */
-        .column-message {
-            width: 100%;
-            display: flex;
-            justify-content: flex-start;
-            padding: 8px 6px;
-            box-sizing: border-box;
-            /* ensure stacked messages aren't absolutely positioned */
-            position: static !important;
-            transform: none !important;
-            opacity: 1 !important;
-        }
-        .column-message.align-right { justify-content: flex-end; flex-direction: row-reverse; }
-        .column-message.align-left { justify-content: flex-start; flex-direction: row; }
-
-        /* align text for right-aligned bubbles */
-        .column-message.align-right .message-content { text-align: right; }
-        .column-message.align-right .message-name { margin-left: 0; margin-right: 6px; }
-        .column-message.align-left .message-name { margin-right: 0; margin-left: 6px; }
-
-        .column-message .message-content { max-width: 82%; }
-        .column-message .message-text { font-size: 1.06rem; line-height: 1.18; overflow-wrap: anywhere; word-break: break-word; white-space: normal; padding: 10px 14px; border-radius: 14px; letter-spacing: -0.2px; }
-
-        /* tighter limits on small phones */
-        @media (max-width: 480px) {
-            .column-message .message-content { max-width: 76%; }
-            .column-message .message-text { font-size: 1.02rem; line-height: 1.14; padding: 9px 12px; }
-            .message-name { font-size: 0.98rem; }
-            .message-avatar { width: 36px; height: 36px; }
-        }
-
-        /* specific tweak for common Android widths (412px) */
-        @media (max-width: 420px) {
-            .column-message .message-content { max-width: 72%; }
-            .column-message .message-text { font-size: 1.0rem; line-height: 1.12; padding: 8px 11px; }
-            .message-name { font-size: 0.95rem; }
-            .message-avatar { width: 34px; height: 34px; }
-        }
-
-        /* very narrow phones: reduce text slightly to avoid wrap overflow */
-        @media (max-width: 360px) {
-            .column-message .message-content { max-width: 70%; }
-            .column-message .message-text { font-size: 0.94rem; line-height: 1.1; padding: 7px 10px; letter-spacing: -0.35px; }
-            .message-avatar { width: 32px; height: 32px; }
-        }
-
-        /* tablet/narrow desktop protective sizing (e.g., 768px) */
-        @media (min-width: 600px) and (max-width: 900px) {
-            .column-message .message-content { max-width: 68%; }
-            .column-message .message-text { font-size: 1.12rem; line-height: 1.18; }
-        }
-
         .column-message {
             position: relative;
             left: auto !important;
@@ -1207,94 +1063,31 @@
             const isMobile = browserInfo.isPhone || window.innerWidth < 768;
 
             if (isMobile) {
-                // On mobile: auto-advancing carousel (one message per view) with alternating left/right alignment
-                const carousel = document.createElement('div');
-                carousel.className = 'no-scroll-carousel';
-
-                const track = document.createElement('div');
-                track.className = 'carousel-track';
-
-                let currentIndex = 0;
-                const autoplayDelay = 2800; // ms — slightly longer so mobile users can read comfortably
-                let autoplayTimer = null;
+                // On mobile: vertical scrollable column so nothing overlaps and everything is readable
+                const column = document.createElement('div');
+                column.className = 'message-column';
 
                 blessings.forEach((blessing, index) => {
-                    const slide = document.createElement('div');
-                    slide.className = 'carousel-slide';
-                    slide.innerHTML = `
-                        <div class="fullscreen-message column-message ${index % 2 === 0 ? 'align-left' : 'align-right'}">
-                            <div class="message-avatar">
-                                <img src="avatar.png.jpg" onerror="this.src='https://cdn-icons-png.flaticon.com/512/4715/4715329.png'" alt="Avatar">
-                            </div>
-                            <div class="message-content">
-                                <div class="message-name">Ovan</div>
-                                <div class="message-text">${blessing}</div>
-                            </div>
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = 'fullscreen-message column-message';
+                    messageDiv.innerHTML = `
+                        <div class="message-avatar">
+                            <img src="avatar.png.jpg" onerror="this.src='https://cdn-icons-png.flaticon.com/512/4715/4715329.png'" alt="Avatar">
+                        </div>
+                        <div class="message-content">
+                            <div class="message-name">Ovan</div>
+                            <div class="message-text">${blessing}</div>
                         </div>
                     `;
-                    track.appendChild(slide);
+
+                    column.appendChild(messageDiv);
+                    setTimeout(() => {
+                        messageDiv.style.opacity = '1';
+                        messageDiv.style.transform = 'scale(1)';
+                    }, 120 * index + 80);
                 });
 
-                carousel.appendChild(track);
-                goodbyeScreen.appendChild(carousel);
-
-                // keep vertical page disabled while carousel is active
-                goodbyeScreen.style.overflow = 'hidden';
-
-                function showIndex(i) {
-                    currentIndex = i;
-                    track.style.transform = `translateX(-${currentIndex * 100}%)`;
-                    // reveal animation
-                    const msg = track.children[currentIndex].querySelector('.fullscreen-message');
-                    if (msg) {
-                        msg.style.opacity = '1';
-                        msg.style.transform = 'scale(1)';
-                    }
-                }
-
-                function startAutoplay() {
-                    if (autoplayTimer) return;
-                    autoplayTimer = setInterval(() => {
-                        if (currentIndex < blessings.length - 1) {
-                            showIndex(currentIndex + 1);
-                        } else {
-                            // stop at last slide (mirror desktop behavior of showing all messages)
-                            stopAutoplay();
-                        }
-                    }, autoplayDelay);
-                }
-
-                function stopAutoplay() {
-                    if (autoplayTimer) { clearInterval(autoplayTimer); autoplayTimer = null; }
-                }
-
-                // basic touch/drag support to allow swipe and pause autoplay
-                let startX = 0, deltaX = 0, isDragging = false;
-                track.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; isDragging = true; stopAutoplay(); });
-                track.addEventListener('touchmove', (e) => {
-                    if (!isDragging) return;
-                    deltaX = e.touches[0].clientX - startX;
-                    track.style.transform = `translateX(calc(${-currentIndex * 100}% + ${deltaX}px))`;
-                });
-                track.addEventListener('touchend', () => {
-                    if (!isDragging) return;
-                    if (Math.abs(deltaX) > 40) {
-                        if (deltaX < 0 && currentIndex < blessings.length - 1) showIndex(currentIndex + 1);
-                        else if (deltaX > 0 && currentIndex > 0) showIndex(currentIndex - 1);
-                    } else {
-                        // snap back to current
-                        showIndex(currentIndex);
-                    }
-                    deltaX = 0; isDragging = false;
-                    // resume autoplay if not at the end
-                    if (currentIndex < blessings.length - 1) startAutoplay();
-                });
-
-                // show first slide then start autoplay
-                showIndex(0);
-                // small stagger so the initial message pops nicely
-                setTimeout(startAutoplay, 220);
-
+                goodbyeScreen.appendChild(column);
             } else {
                 // Desktop: use preset positions but clamp them to viewport and ensure spacing
                 const positions = [
