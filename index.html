@@ -985,36 +985,12 @@
         function showAllBlessingsOnBlackScreen() {
             const blessings = [
                 "記得按時吃飯喔", "天冷了多穿點", "別太在意別人的看法", "早點休息", "多喝熱水", 
-                "今天的你也超厉害的", "心情要保持愉快", "別太累了", "你已經做得很好了", "照顧好自己"
+                "今天的你也超厲害的", "心情要保持愉快", "別太累了", "你已經做得很好了", "你已經做得很好了"
             ];
             
             const goodbyeScreen = document.getElementById('goodbye-screen');
-            function isMobileDevice() {
-                try {
-                    if (navigator.userAgentData && navigator.userAgentData.mobile !== undefined) {
-                        return navigator.userAgentData.mobile;
-                    }
-                } catch (e) {}
-                return /Mobi|Android|iPhone|iPad|iPod|Phone/i.test(navigator.userAgent) || ('ontouchstart' in window) || window.innerWidth < 768;
-            }
-            const isMobile = isMobileDevice();
-            document.documentElement.classList.toggle('is-mobile', isMobile);
-
-            // 使用固定位置陣列，確保絕對不重疊並在手機屏幕中完美展示
-            const positions = isMobile ? [
-                // 手機版優化位置 - 確保所有訊息都在可視區域內
-                {x: window.innerWidth * 0.05, y: window.innerHeight * 0.08},
-                {x: window.innerWidth * 0.55, y: window.innerHeight * 0.05},
-                {x: window.innerWidth * 0.02, y: window.innerHeight * 0.25},
-                {x: window.innerWidth * 0.52, y: window.innerHeight * 0.22},
-                {x: window.innerWidth * 0.08, y: window.innerHeight * 0.42},
-                {x: window.innerWidth * 0.48, y: window.innerHeight * 0.45},
-                {x: window.innerWidth * 0.05, y: window.innerHeight * 0.62},
-                {x: window.innerWidth * 0.55, y: window.innerHeight * 0.65},
-                {x: window.innerWidth * 0.1, y: window.innerHeight * 0.82},
-                {x: window.innerWidth * 0.45, y: window.innerHeight * 0.78}
-            ] : [
-                // 桌面版 3x4 固定位置
+            // Desktop-only fixed positions (removed mobile/device detection)
+            const positions = [
                 {x: window.innerWidth * 0.15, y: window.innerHeight * 0.15},
                 {x: window.innerWidth * 0.45, y: window.innerHeight * 0.12},
                 {x: window.innerWidth * 0.75, y: window.innerHeight * 0.18},
