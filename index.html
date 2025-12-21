@@ -387,6 +387,21 @@
             z-index: 6000;
         }
 
+        /* When using the mobile-alternating modifier, make it a full-height scrollable column
+           placed normally so users can scroll vertically and nothing overflows horizontally */
+        .message-column.mobile-alternating {
+            position: relative;
+            left: auto;
+            top: auto;
+            transform: none;
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            padding: 16px 10px;
+            align-items: stretch;
+            justify-content: flex-start;
+        }
+
         /* Mobile carousel: show one message per screen without page scrolling */
         .no-scroll-carousel {
             width: 100vw;
@@ -450,6 +465,36 @@
 
         .no-scroll-carousel .nav-prev { left: 14px; }
         .no-scroll-carousel .nav-next { right: 14px; }
+
+        /* Alternating stacked layout for mobile: align messages left/right, keep bubbles within viewport */
+        .column-message {
+            width: 100%;
+            display: flex;
+            justify-content: flex-start;
+            padding: 8px 6px;
+            box-sizing: border-box;
+            /* ensure stacked messages aren't absolutely positioned */
+            position: static !important;
+            transform: none !important;
+            opacity: 1 !important;
+        }
+        .column-message.align-right { justify-content: flex-end; flex-direction: row-reverse; }
+        .column-message.align-left { justify-content: flex-start; flex-direction: row; }
+
+        /* align text for right-aligned bubbles */
+        .column-message.align-right .message-content { text-align: right; }
+        .column-message.align-right .message-name { margin-left: 0; margin-right: 6px; }
+        .column-message.align-left .message-name { margin-right: 0; margin-left: 6px; }
+
+        .column-message .message-content { max-width: 82%; }
+        .column-message .message-text { font-size: 1.06rem; line-height: 1.18; }
+
+        /* tighter limits on very narrow screens */
+        @media (max-width: 480px) {
+            .column-message .message-content { max-width: 74%; }
+            .column-message .message-text { font-size: 1.0rem; }
+            .message-avatar { width: 36px; height: 36px; }
+        }
 
         .column-message {
             position: relative;
@@ -1127,94 +1172,37 @@
             const isMobile = browserInfo.isPhone || window.innerWidth < 768;
 
             if (isMobile) {
-                // On mobile: show a full-screen carousel (one message per view) without page scrolling
-                const carousel = document.createElement('div');
-                carousel.className = 'no-scroll-carousel';
-
-                const track = document.createElement('div');
-                track.className = 'carousel-track';
-
-                let currentIndex = 0;
+                // On mobile: stacked vertical list with alternating left/right alignment (prevents horizontal overflow)
+                const column = document.createElement('div');
+                column.className = 'message-column mobile-alternating';
 
                 blessings.forEach((blessing, index) => {
-                    const slide = document.createElement('div');
-                    slide.className = 'carousel-slide';
-                    slide.innerHTML = `
-                        <div class="fullscreen-message column-message">
-                            <div class="message-avatar">
-                                <img src="avatar.png.jpg" onerror="this.src='https://cdn-icons-png.flaticon.com/512/4715/4715329.png'" alt="Avatar">
-                            </div>
-                            <div class="message-content">
-                                <div class="message-name">Ovan</div>
-                                <div class="message-text">${blessing}</div>
-                            </div>
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = 'fullscreen-message column-message ' + (index % 2 === 0 ? 'align-left' : 'align-right');
+                    messageDiv.innerHTML = `
+                        <div class="message-avatar">
+                            <img src="avatar.png.jpg" onerror="this.src='https://cdn-icons-png.flaticon.com/512/4715/4715329.png'" alt="Avatar">
+                        </div>
+                        <div class="message-content">
+                            <div class="message-name">Ovan</div>
+                            <div class="message-text">${blessing}</div>
                         </div>
                     `;
-                    track.appendChild(slide);
+
+                    column.appendChild(messageDiv);
+
+                    // reveal animation
+                    setTimeout(() => {
+                        messageDiv.style.opacity = '1';
+                        messageDiv.style.transform = 'scale(1)';
+                    }, 120 * index + 80);
                 });
 
-                carousel.appendChild(track);
+                // vertical scroll is allowed, but messages are constrained horizontally
+                goodbyeScreen.appendChild(column);
+                goodbyeScreen.style.overflow = 'auto';
+                goodbyeScreen.style['-webkit-overflow-scrolling'] = 'touch';
 
-                const prev = document.createElement('button');
-                prev.className = 'nav-btn nav-prev';
-                prev.innerText = '‹';
-
-                const next = document.createElement('button');
-                next.className = 'nav-btn nav-next';
-                next.innerText = '›';
-
-                prev.addEventListener('click', () => {
-                    currentIndex = Math.max(0, currentIndex - 1);
-                    updateCarousel();
-                });
-                next.addEventListener('click', () => {
-                    currentIndex = Math.min(blessings.length - 1, currentIndex + 1);
-                    updateCarousel();
-                });
-
-                carousel.appendChild(prev);
-                carousel.appendChild(next);
-
-                goodbyeScreen.appendChild(carousel);
-                // disable goodbye screen scrolling for carousel
-                goodbyeScreen.style.overflow = 'hidden';
-
-                // simple touch swipe support
-                let startX = 0, deltaX = 0, isDragging = false;
-                track.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; isDragging = true; });
-                track.addEventListener('touchmove', (e) => {
-                    if (!isDragging) return;
-                    deltaX = e.touches[0].clientX - startX;
-                    track.style.transform = `translateX(calc(${-currentIndex * 100}% + ${deltaX}px))`;
-                });
-                track.addEventListener('touchend', () => {
-                    if (Math.abs(deltaX) > 40) {
-                        if (deltaX < 0) currentIndex = Math.min(blessings.length - 1, currentIndex + 1);
-                        else currentIndex = Math.max(0, currentIndex - 1);
-                    }
-                    deltaX = 0; isDragging = false; updateCarousel();
-                });
-
-                function updateCarousel() {
-                    track.style.transform = `translateX(-${currentIndex * 100}%)`;
-                }
-
-                // initial reveal animations per slide
-                const slides = track.children;
-                for (let i = 0; i < slides.length; i++) {
-                    (function(i) {
-                        setTimeout(() => {
-                            const msg = slides[i].querySelector('.fullscreen-message');
-                            if (msg) {
-                                msg.style.opacity = '1';
-                                msg.style.transform = 'scale(1)';
-                            }
-                        }, 120 * i + 80);
-                    })(i);
-                }
-
-                // ensure starting position
-                updateCarousel();
             } else {
                 // Desktop: use preset positions but clamp them to viewport and ensure spacing
                 const positions = [
