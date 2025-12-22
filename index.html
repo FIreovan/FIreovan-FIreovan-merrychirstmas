@@ -493,40 +493,46 @@
         
         @media (max-width: 768px) {
             .message-text {
-                font-size: 1.0rem;
-                padding: 8px 12px;
-                line-height: 1.12;
-                max-width: 180px;
+                font-size: 1.12rem;
+                padding: 10px 16px;
+                line-height: 1.15;
+                max-width: 200px;
+                word-wrap: break-word;
             }
-            
+
             .message-avatar {
-                width: 48px;
-                height: 48px;
+                width: 40px;
+                height: 40px;
             }
-            
+
             .message-name {
-                font-size: 0.95rem;
+                font-size: 1.0rem;
             }
-            
+
             .fullscreen-message {
                 gap: 6px;
             }
         }
 
-        @media (max-width: 420px) {
-            .message-text {
-                font-size: 0.95rem;
-                padding: 7px 10px;
-                max-width: 150px;
+        @media (max-width: 360px) {
+            .message-text { 
+                font-size: 0.96rem; 
+                padding: 8px 11px;
+                max-width: 157px;
+                word-wrap: break-word;
             }
-
+            
             .message-avatar {
-                width: 34px;
-                height: 34px;
+                width: 32px;
+                height: 32px;
             }
-
+            
             .message-name {
-                font-size: 0.9rem;
+                font-size: 0.65rem;
+            }
+            
+            .fullscreen-message {
+                gap: 4px;
             }
         }
 
@@ -807,6 +813,7 @@
         @media (max-width: 480px) {
             h1 { font-size: 1.8rem; }
             .subtitle { font-size: 1rem; }
+            #click-text { font-size: 1.5rem; }
             .gifts-container { gap: 30px; }
             .gift-box { 
                 width: 100px; 
@@ -823,8 +830,8 @@
             }
             
             .message-avatar {
-                width: 44px;
-                height: 44px;
+                width: 35px;
+                height: 35px;
             }
             
             .fullscreen-message {
@@ -1060,21 +1067,22 @@
             
             const goodbyeScreen = document.getElementById('goodbye-screen');
             // configure your avatar filename/path here (place file in same folder as index.html)
-            const AVATAR_SRC = 'avatar.png';
+            // Using a public CDN URL so the avatar loads even if local file is missing
+            const AVATAR_SRC = 'https://cdn-icons-png.flaticon.com/512/4715/4715329.png';
             // Choose positions based on viewport width so mobile users see optimized layout
             const isMobile = window.innerWidth < 768;
             const positions = isMobile ? [
-                // Mobile-optimized positions (spread more to the right side)
-                {x: window.innerWidth * 0.08, y: window.innerHeight * 0.08},
-                {x: window.innerWidth * 0.78, y: window.innerHeight * 0.05},
-                {x: window.innerWidth * 0.15, y: window.innerHeight * 0.25},
-                {x: window.innerWidth * 0.62, y: window.innerHeight * 0.22},
-                {x: window.innerWidth * 0.12, y: window.innerHeight * 0.42},
-                {x: window.innerWidth * 0.82, y: window.innerHeight * 0.45},
+                // 手機版優化位置 - 參考 index.html，確保在可視區域內排列且不重疊
+                {x: window.innerWidth * 0.05, y: window.innerHeight * 0.08},
+                {x: window.innerWidth * 0.55, y: window.innerHeight * 0.05},
+                {x: window.innerWidth * 0.02, y: window.innerHeight * 0.25},
+                {x: window.innerWidth * 0.52, y: window.innerHeight * 0.22},
+                {x: window.innerWidth * 0.08, y: window.innerHeight * 0.42},
+                {x: window.innerWidth * 0.48, y: window.innerHeight * 0.45},
                 {x: window.innerWidth * 0.05, y: window.innerHeight * 0.62},
-                {x: window.innerWidth * 0.75, y: window.innerHeight * 0.65},
-                {x: window.innerWidth * 0.18, y: window.innerHeight * 0.82},
-                {x: window.innerWidth * 0.55, y: window.innerHeight * 0.78}
+                {x: window.innerWidth * 0.55, y: window.innerHeight * 0.65},
+                {x: window.innerWidth * 0.10, y: window.innerHeight * 0.82},
+                {x: window.innerWidth * 0.45, y: window.innerHeight * 0.78}
             ] : [
                 // Desktop positions
                 {x: window.innerWidth * 0.15, y: window.innerHeight * 0.15},
