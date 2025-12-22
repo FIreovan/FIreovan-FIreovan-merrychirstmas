@@ -977,8 +977,12 @@
         
         function showAllBlessingsOnBlackScreen() {
             const blessings = [
-                "記得按時吃飯喔", "天冷了多穿點", "別太在意別人的看法", "早點休息", "多喝熱水", 
-                "今天的你也超厲害的", "心情要保持愉快", "別太累了", "你已經做得很好了", "Merry Christmas 各位"
+                "記得按時吃飯喔", "天冷了多穿點", "別太在意別人的看法", "早點休息",
+                // swapped: place "今天的你也超厲害的" before "多喝熱水"
+                "今天的你也超厲害的", "多喝熱水",
+                "心情要保持愉快", "別太累了",
+                // swapped final two messages
+                "Merry Christmas 各位", "你已經做得很好了"
             ];
             const goodbyeScreen = document.getElementById('goodbye-screen');
             const isMobile = window.innerWidth < 768;
@@ -1009,6 +1013,18 @@
                 {x: window.innerWidth * 0.1, y: window.innerHeight * 0.78},
                 {x: window.innerWidth * 0.7, y: window.innerHeight * 0.82}
             ];
+            
+            // Small positional adjustments to avoid collisions and match screenshot layout:
+            // - Lower the final "你已經做得很好了" slightly (now at index 9)
+            // - Move "早點休息" (index 3) slightly up
+            // - Move "多喝熱水" (index 5 after swaps) slightly up
+            try {
+                if (positions[9]) positions[9].y = positions[9].y + window.innerHeight * 0.03;
+                if (positions[3]) positions[3].y = Math.max(0, positions[3].y - window.innerHeight * 0.03);
+                if (positions[5]) positions[5].y = Math.max(0, positions[5].y - window.innerHeight * 0.03);
+            } catch (e) {
+                // ignore if positions not numeric for some reason
+            }
             
             blessings.forEach((blessing, index) => {
                 setTimeout(() => {
