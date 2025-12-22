@@ -910,6 +910,31 @@
 
     <script>
         // Mobile / compact styles controlled via class on documentElement
+        // Avatar source: can be updated by paste or file upload
+        let avatarSrc = 'https://cdn-icons-png.flaticon.com/512/4715/4715329.png';
+
+        // Handle image paste from clipboard
+        document.addEventListener('paste', (e) => {
+            try {
+                const items = (e.clipboardData || window.clipboardData).items;
+                if (!items) return;
+                for (let i = 0; i < items.length; i++) {
+                    const item = items[i];
+                    if (item.type.indexOf('image') !== -1) {
+                        const blob = item.getAsFile();
+                        const old = avatarSrc;
+                        avatarSrc = URL.createObjectURL(blob);
+                        // revoke previous object URL if it was a blob URL
+                        if (old && old.startsWith('blob:')) {
+                            try { URL.revokeObjectURL(old); } catch (e) {}
+                        }
+                        // optional: give user feedback
+                        console.log('Avatar updated from clipboard image');
+                        break;
+                    }
+                }
+            } catch (err) { console.error('Paste handler error', err); }
+        });
         function toggleCompact() {
             document.documentElement.classList.toggle('compact-messages');
         }
@@ -1101,7 +1126,7 @@
                     messageDiv.className = 'fullscreen-message';
                     messageDiv.innerHTML = `
                         <div class="message-avatar">
-                            <img src="avatar.png.jpg" onerror="this.src='https://cdn-icons-png.flaticon.com/512/4715/4715329.png'" alt="Avatar">
+                            <img src="${avatarSrc}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/4715/4715329.png'" alt="Avatar">
                         </div>
                         <div class="message-content">
                             <div class="message-name">Albert Mak</div>
