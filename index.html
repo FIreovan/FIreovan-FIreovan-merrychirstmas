@@ -892,6 +892,8 @@
     </div>
     
     <div id="music-control" onclick="toggleMusic()" style="display: none;">🎵</div>
+    <button id="change-avatar-btn" onclick="document.getElementById('avatar-input').click()" style="display: none; position: absolute; right: 70px; top:20px; z-index:100; background:rgba(255,255,255,0.08); color:var(--snow); border:1px solid rgba(255,255,255,0.08); padding:6px 10px; border-radius:8px;">更換頭像</button>
+    <input type="file" id="avatar-input" accept="image/*" style="display:none">
     <!-- Mobile compact toggle (visible on small screens) -->
     <div id="mobile-compact-toggle" onclick="toggleCompact()" title="縮小訊息">Aa</div>
     <audio id="bgm" loop>
@@ -911,30 +913,59 @@
     <script>
         // Mobile / compact styles controlled via class on documentElement
         // Avatar source: can be updated by paste or file upload
-        let avatarSrc = 'https://cdn-icons-png.flaticon.com/512/4715/4715329.png';
+        // Use data URL stored in localStorage so it persists across page reloads
+        const AVATAR_KEY = 'avatarSrc';
+        let avatarSrc = localStorage.getItem(AVATAR_KEY) || 'https://cdn-icons-png.flaticon.com/512/4715/4715329.png';
 
-        // Handle image paste from clipboard
+        // Update visible UI controls when music control shown
+        function showAvatarControls() {
+            const btn = document.getElementById('change-avatar-btn');
+            if (btn) btn.style.display = 'block';
+        }
+
+        // Convert File/Blob to dataURL and save
+        function fileToDataURL(file, callback) {
+            const reader = new FileReader();
+            reader.onload = function(ev) { callback(ev.target.result); };
+            reader.onerror = function() { callback(null); };
+            reader.readAsDataURL(file);
+        }
+
+        function setAvatarDataURL(dataURL) {
+            if (!dataURL) return;
+            avatarSrc = dataURL;
+            try { localStorage.setItem(AVATAR_KEY, avatarSrc); } catch (e) { console.warn('Could not save avatar to localStorage', e); }
+            console.log('Avatar updated and saved');
+        }
+
+        // Handle image paste from clipboard (reads blob and saves as dataURL)
         document.addEventListener('paste', (e) => {
             try {
                 const items = (e.clipboardData || window.clipboardData).items;
                 if (!items) return;
                 for (let i = 0; i < items.length; i++) {
                     const item = items[i];
-                    if (item.type.indexOf('image') !== -1) {
+                    if (item.type && item.type.indexOf('image') !== -1) {
                         const blob = item.getAsFile();
-                        const old = avatarSrc;
-                        avatarSrc = URL.createObjectURL(blob);
-                        // revoke previous object URL if it was a blob URL
-                        if (old && old.startsWith('blob:')) {
-                            try { URL.revokeObjectURL(old); } catch (e) {}
-                        }
-                        // optional: give user feedback
-                        console.log('Avatar updated from clipboard image');
+                        if (!blob) continue;
+                        fileToDataURL(blob, (dataURL) => {
+                            if (dataURL) setAvatarDataURL(dataURL);
+                        });
                         break;
                     }
                 }
             } catch (err) { console.error('Paste handler error', err); }
         });
+
+        // Handle file input (mobile-friendly upload)
+        const avatarInput = document.getElementById('avatar-input');
+        if (avatarInput) {
+            avatarInput.addEventListener('change', (ev) => {
+                const file = ev.target.files && ev.target.files[0];
+                if (!file) return;
+                fileToDataURL(file, (dataURL) => { if (dataURL) setAvatarDataURL(dataURL); });
+            });
+        }
         function toggleCompact() {
             document.documentElement.classList.toggle('compact-messages');
         }
