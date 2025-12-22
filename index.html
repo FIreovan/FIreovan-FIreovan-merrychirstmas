@@ -1066,13 +1066,11 @@
             ];
             
             const goodbyeScreen = document.getElementById('goodbye-screen');
-            // configure your avatar filename/path here (place file in same folder as index.html)
-            // Using a public CDN URL so the avatar loads even if local file is missing
-            const AVATAR_SRC = 'https://cdn-icons-png.flaticon.com/512/4715/4715329.png';
-            // Choose positions based on viewport width so mobile users see optimized layout
             const isMobile = window.innerWidth < 768;
+            
+            // 使用固定位置陣列，確保絕對不重疊並在手機屏幕中完美展示
             const positions = isMobile ? [
-                // 手機版優化位置 - 參考 index.html，確保在可視區域內排列且不重疊
+                // 手機版優化位置 - 確保所有訊息都在可視區域內
                 {x: window.innerWidth * 0.05, y: window.innerHeight * 0.08},
                 {x: window.innerWidth * 0.55, y: window.innerHeight * 0.05},
                 {x: window.innerWidth * 0.02, y: window.innerHeight * 0.25},
@@ -1081,10 +1079,10 @@
                 {x: window.innerWidth * 0.48, y: window.innerHeight * 0.45},
                 {x: window.innerWidth * 0.05, y: window.innerHeight * 0.62},
                 {x: window.innerWidth * 0.55, y: window.innerHeight * 0.65},
-                {x: window.innerWidth * 0.10, y: window.innerHeight * 0.82},
+                {x: window.innerWidth * 0.1, y: window.innerHeight * 0.82},
                 {x: window.innerWidth * 0.45, y: window.innerHeight * 0.78}
             ] : [
-                // Desktop positions
+                // 桌面版 3x4 固定位置
                 {x: window.innerWidth * 0.15, y: window.innerHeight * 0.15},
                 {x: window.innerWidth * 0.45, y: window.innerHeight * 0.12},
                 {x: window.innerWidth * 0.75, y: window.innerHeight * 0.18},
@@ -1103,53 +1101,27 @@
                     messageDiv.className = 'fullscreen-message';
                     messageDiv.innerHTML = `
                         <div class="message-avatar">
-                            <img src="${AVATAR_SRC}" onerror="(function(img){console.warn('avatar failed to load:', img.src); img.onerror=null; img.src='https://cdn-icons-png.flaticon.com/512/4715/4715329.png';})(this)" alt="Avatar">
+                            <img src="avatar.png.jpg" onerror="this.src='https://cdn-icons-png.flaticon.com/512/4715/4715329.png'" alt="Avatar">
                         </div>
                         <div class="message-content">
-                            <div class="message-name">Ovan</div>
+                            <div class="message-name">Albert Mak</div>
                             <div class="message-text">${blessing}</div>
                         </div>
                     `;
                     
-                    // 使用預定義的固定位置 (位置被視作元素中心)
+                    // 使用預定義的固定位置
                     const position = positions[index];
-                    // clamp initial coords to viewport margins (center coords)
-                    let posX = Math.min(Math.max(position.x, 20), window.innerWidth - 20);
-                    let posY = Math.min(Math.max(position.y, 20), window.innerHeight - 20);
-                    messageDiv.style.left = posX + 'px';
-                    messageDiv.style.top = posY + 'px';
-                    // append before measuring
+                    messageDiv.style.left = position.x + 'px';
+                    messageDiv.style.top = position.y + 'px';
+                    
                     goodbyeScreen.appendChild(messageDiv);
-                    // ensure element stays fully visible by adjusting with its size
-                    const rect = messageDiv.getBoundingClientRect();
-                    const halfW = rect.width / 2;
-                    const halfH = rect.height / 2;
-                    let adjX = Math.min(Math.max(posX, halfW + 8), window.innerWidth - halfW - 8);
-                    let adjY = Math.min(Math.max(posY, halfH + 8), window.innerHeight - halfH - 8);
-                    messageDiv.style.left = adjX + 'px';
-                    messageDiv.style.top = adjY + 'px';
-                    // animate from centered small -> centered normal
+                    
                     setTimeout(() => {
                         messageDiv.style.opacity = '1';
-                        messageDiv.style.transform = 'translate(-50%,-50%) scale(1)';
+                        messageDiv.style.transform = 'scale(1)';
                     }, 100);
                 }, index * 200);
             });
-
-            // keep messages visible after resizes/orientation changes
-            function clampMessagePositions() {
-                document.querySelectorAll('.fullscreen-message').forEach(el => {
-                    const rect = el.getBoundingClientRect();
-                    const halfW = rect.width/2, halfH = rect.height/2;
-                    let left = parseFloat(el.style.left) || (rect.left + halfW);
-                    let top = parseFloat(el.style.top) || (rect.top + halfH);
-                    left = Math.min(Math.max(left, halfW + 8), window.innerWidth - halfW - 8);
-                    top = Math.min(Math.max(top, halfH + 8), window.innerHeight - halfH - 8);
-                    el.style.left = left + 'px';
-                    el.style.top = top + 'px';
-                });
-            }
-            window.addEventListener('resize', clampMessagePositions);
         }
     </script>
 </body>
