@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>聖誕快樂 - 來自Ovan的禮物</title>
+    <title>Merry Christmas - 來自Ovan的禮物</title>
     <style>
         :root {
             --christmas-red: #d42426;
@@ -28,7 +28,7 @@
             position: relative;
         }
         
-        body.tree-active {
+        body.tree-scene {
             background: linear-gradient(135deg, 
                 #8B0000 0%,
                 #A0153E 25%,
@@ -44,79 +44,6 @@
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
-        }
-        
-        /* Welcome Screen Styles */
-        #welcome-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            /* solid black to prevent underlying background from showing during transition */
-            background: #000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 7000;
-            cursor: pointer;
-            transition: opacity 0.8s ease;
-            overflow: hidden;
-        }
-
-        /* larger, softer halo behind the text but NOT a bright white spotlight
-           use a faint red core + darkened surrounding to read as shadow, not a circle */
-        #welcome-screen::before {
-            content: '';
-            position: absolute;
-            width: 160%;
-            height: 160%;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            /* faint red center blended into dark vignette so it doesn't appear as a white disk */
-            background:
-                radial-gradient(ellipse at center, rgba(212,36,38,0.06) 0%, rgba(212,36,38,0.04) 12%, rgba(0,0,0,0.65) 45%, rgba(0,0,0,0.85) 85%),
-                radial-gradient(ellipse at center, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.8) 100%);
-            filter: blur(28px);
-            opacity: 0.98;
-            pointer-events: none;
-            z-index: 6998;
-            transition: opacity 0.45s ease, transform 0.5s ease;
-        }
-
-        #welcome-screen.hidden::before {
-            opacity: 0;
-            transform: translate(-50%, -55%) scale(0.98);
-        }
-
-        #welcome-screen.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-        
-        .welcome-text {
-            color: #ffffff; /* explicit white */
-            font-size: 3.5rem;
-            text-align: center;
-            position: relative;
-            z-index: 7000;
-            animation: welcomePulse 2s ease-in-out infinite;
-            /* stronger red text-shadow: small crisp offset + larger soft glow */
-            text-shadow:
-                0 3px 0 rgba(120,10,10,0.98), /* crisp darker red offset */
-                0 10px 22px rgba(212,36,38,0.88), /* soft red blur */
-                0 0 44px rgba(212,36,38,0.55); /* diffuse red halo */
-        }
-
-        /* no inner bright core so the shadow reads purely as text-shadow */
-        .welcome-text::before {
-            display: none;
-        }
-        
-        @keyframes welcomePulse {
-            0%, 100% { opacity: 0.6; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.05); }
         }
 
         #snow-container {
@@ -139,7 +66,8 @@
         }
 
         @keyframes fall {
-            to { transform: translateY(105vh); }
+            0% { top: -20px; }
+            100% { top: 100vh; }
         }
 
         #music-control {
@@ -157,6 +85,69 @@
         
         #music-control:hover {
             transform: scale(1.1);
+        }
+
+        #welcome-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            cursor: pointer;
+            border: none;
+            padding: 0;
+            margin: 0;
+            background-clip: padding-box;
+            -webkit-appearance: none;
+            appearance: none;
+            font: inherit;
+        }
+
+        /* soft halo behind welcome to match index 1 visual */
+        #welcome-screen::before {
+            content: '';
+            position: absolute;
+            width: 160%;
+            height: 160%;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background:
+                radial-gradient(ellipse at center, rgba(212,36,38,0.06) 0%, rgba(212,36,38,0.04) 12%, rgba(0,0,0,0.65) 45%, rgba(0,0,0,0.85) 85%),
+                radial-gradient(ellipse at center, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.8) 100%);
+            filter: blur(28px);
+            opacity: 0.98;
+            pointer-events: none;
+            z-index: 6998;
+            transition: opacity 0.45s ease, transform 0.5s ease;
+        }
+        
+        #welcome-screen.hidden {
+            display: none;
+        }
+        
+        /* Click Me! -- match index 1 red glowing style */
+        #click-text {
+            font-size: 3.5rem;
+            color: var(--snow);
+            text-align: center;
+            position: relative;
+            z-index: 7000;
+            animation: welcomePulse 2s ease-in-out infinite;
+            text-shadow:
+                0 3px 0 rgba(120,10,10,0.98),
+                0 10px 22px rgba(212,36,38,0.88),
+                0 0 44px rgba(212,36,38,0.55);
+        }
+
+        @keyframes welcomePulse {
+            0%, 100% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
         }
 
         .container {
@@ -361,29 +352,21 @@
             display: flex;
             align-items: flex-end;
             gap: 8px;
-            /* ensure messages render horizontally (not vertically) on mobile */
-            writing-mode: horizontal-tb;
-            -webkit-writing-mode: horizontal-tb;
-            text-orientation: mixed;
-            direction: ltr;
-            flex-wrap: nowrap;
             opacity: 0;
-            transform-origin: center;
-            transform: translate(-50%,-50%) scale(0.8);
-            transition: all 0.45s cubic-bezier(.22,.9,.35,1);
+            transform: scale(0.8);
+            transition: all 0.5s ease;
             z-index: 5001;
-            pointer-events: none;
-            max-width: calc(100% - 20px);
         }
         
         .message-avatar {
-            width: 64px;
-            height: 64px;
+            width: 54px;
+            height: 54px;
             border-radius: 50%;
             overflow: visible; /* allow ring to extend outside */
             position: relative;
             z-index: 5005;
             flex-shrink: 0;
+            display: inline-block;
         }
 
         /* colorful gradient ring using a pseudo element (blue palette) */
@@ -429,21 +412,6 @@
             z-index: 5006; /* above ring */
             display: block;
         }
-
-        /* make the display name pop with a blue gradient fill and subtle white highlight */
-        .message-name {
-            font-size: 1.0rem;
-            font-weight: bold;
-            margin-bottom: 5px;
-            margin-left: 2px;
-            color: transparent;
-            background: linear-gradient(90deg, #6ec6ff 0%, #40c4ff 50%, #2979ff 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            text-shadow: 0 0 6px rgba(255,255,255,0.6), 1px 1px 2px rgba(0,0,0,0.45);
-            position: relative;
-            z-index: 5012;
-        }
         
         .message-content {
             display: flex;
@@ -453,15 +421,15 @@
         }
         
         .message-name {
+            color: var(--snow);
             font-size: 1.0rem;
             font-weight: bold;
             margin-bottom: 5px;
             margin-left: 2px;
-            color: transparent;
-            background: linear-gradient(90deg, #6ec6ff 0%, #40c4ff 50%, #2979ff 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            text-shadow: 0 0 6px rgba(255,255,255,0.55), 1px 1px 2px rgba(0,0,0,0.45);
+            text-shadow:
+                0 0 8px #d42426,
+                0 0 16px #d42426,
+                2px 2px 4px rgba(0,0,0,0.5);
             position: relative;
             z-index: 5012;
         }
@@ -471,21 +439,14 @@
             color: #2c3e50;
             padding: 13px 21px;
             border-radius: 15px;
-            font-size: 1.1rem;
+            font-size: 1.26rem;
             font-weight: 500;
             line-height: 1.2;
             box-shadow: 
                 0 6px 20px rgba(0,0,0,0.12),
                 0 3px 8px rgba(0,0,0,0.1);
             display: inline-block;
-            /* force horizontal text flow and prevent rotation/vertical layout */
-            writing-mode: horizontal-tb;
-            -webkit-writing-mode: horizontal-tb;
-            text-orientation: mixed;
-            transform: rotate(0deg) !important;
-            white-space: normal;
-            word-break: break-word;
-            max-width: 320px;
+            white-space: nowrap;
             position: relative;
             z-index: 5015;
             border: 1px solid rgba(0,0,0,0.1);
@@ -499,40 +460,18 @@
                 max-width: 200px;
                 word-wrap: break-word;
             }
-
+            
             .message-avatar {
                 width: 40px;
                 height: 40px;
             }
-
+            
             .message-name {
                 font-size: 1.0rem;
             }
-
+            
             .fullscreen-message {
                 gap: 6px;
-            }
-        }
-
-        @media (max-width: 360px) {
-            .message-text { 
-                font-size: 0.96rem; 
-                padding: 8px 11px;
-                max-width: 157px;
-                word-wrap: break-word;
-            }
-            
-            .message-avatar {
-                width: 32px;
-                height: 32px;
-            }
-            
-            .message-name {
-                font-size: 0.65rem;
-            }
-            
-            .fullscreen-message {
-                gap: 4px;
             }
         }
 
@@ -552,15 +491,41 @@
 
         #final-message {
             font-size: 2rem;
-            color: var(--gold);
+            color: var(--snow);
             margin-bottom: 20px;
             text-align: center;
             animation: fadeIn 2s;
         }
+
+        .red-glow-text {
+            color: var(--snow);
+            text-shadow:
+                0 0 8px var(--snow),
+                0 0 16px var(--snow),
+                0 0 2px var(--christmas-red),
+                0 0 6px var(--christmas-red),
+                2px 2px 0 var(--christmas-red),
+                -2px -2px 0 var(--christmas-red),
+                0 0 24px var(--snow);
+        }
+
+        /* Override: for final scene texts and the goodbye button, remove red glow and keep only white glow */
+        #final-message.red-glow-text,
+        #final-sub-message.red-glow-text,
+        #bye-btn.red-glow-text,
+        #final-message,
+        #final-sub-message,
+        #bye-btn {
+            color: var(--snow) !important;
+            text-shadow:
+                0 0 8px var(--snow),
+                0 0 16px var(--snow),
+                0 0 24px var(--snow) !important;
+        }
         
         #final-sub-message {
             font-size: 1.2rem;
-            color: white;
+            color: var(--snow);
             margin-bottom: 40px;
             animation: fadeIn 3s;
         }
@@ -658,17 +623,17 @@
 
         .star-path {
             fill: none;
-            stroke: var(--gold);
+            stroke: #f8b229;
             stroke-width: 1.5;
             opacity: 0;
             animation: fadeIn 0.5s ease-in-out 2.2s forwards;
         }
 
         .star-filled {
-            fill: var(--gold);
+            fill: #f8b229;
             opacity: 0;
             animation: fadeIn 0.5s ease-in-out 2.5s forwards;
-            filter: drop-shadow(0 0 5px var(--gold));
+            filter: drop-shadow(0 0 5px #f8b229);
         }
 
         .ornament {
@@ -703,8 +668,8 @@
         #bye-btn {
             margin-top: 30px;
             background: transparent;
-            border: 2px solid var(--gold);
-            color: var(--gold);
+            border: 2px solid var(--snow);
+            color: var(--snow);
             padding: 8px 25px;
             border-radius: 20px;
             cursor: pointer;
@@ -715,9 +680,9 @@
             transition: all 0.3s;
             animation: buttonGlow 2s ease-in-out infinite, buttonPulse 3s ease-in-out infinite;
             box-shadow: 
-                0 0 10px rgba(248, 178, 41, 0.4),
-                0 0 20px rgba(248, 178, 41, 0.2),
-                0 0 30px rgba(248, 178, 41, 0.1);
+                0 0 10px #d42426,
+                0 0 20px #fff,
+                0 0 30px #fff;
         }
         
         #bye-btn::before {
@@ -738,13 +703,13 @@
         }
         
         #bye-btn::after {
-            content: '✨ 點擊我 ✨';
+            content: '✨ Click Me! ✨';
             position: absolute;
             top: -35px;
             left: 50%;
             transform: translateX(-50%);
             background: rgba(0, 0, 0, 0.8);
-            color: var(--gold);
+            color: var(--snow);
             padding: 5px 10px;
             border-radius: 15px;
             font-size: 0.8rem;
@@ -755,7 +720,7 @@
         }
 
         #bye-btn:hover {
-            background: var(--gold);
+            background: var(--snow);
             color: black;
             transform: scale(1.1);
             box-shadow: 
@@ -773,6 +738,7 @@
             h1 { font-size: 2rem; }
             .subtitle { font-size: 1.2rem; }
             #gift-title { font-size: 1.4rem; margin-bottom: 25px; }
+            #click-text { font-size: 2rem; }
             .gifts-container { gap: 40px; }
             .gift-box { 
                 width: 120px; 
@@ -797,8 +763,8 @@
             }
             
             .message-avatar {
-                width: 40px;
-                height: 40px;
+                width: 32px;
+                height: 32px;
             }
             
             .message-name {
@@ -838,72 +804,25 @@
                 gap: 5px;
             }
         }
-
-        /* Mobile compact toggle button */
-        #mobile-compact-toggle {
-            display: none;
-            position: absolute;
-            left: 16px;
-            top: 16px;
-            z-index: 100;
-            background: rgba(255,255,255,0.06);
-            color: var(--snow);
-            padding: 6px 9px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 700;
-            box-shadow: 0 6px 18px rgba(0,0,0,0.35);
-        }
-
-        @media (max-width: 768px) {
-            #mobile-compact-toggle { display: block; }
-            .fullscreen-message { max-width: calc(100% - 32px); }
-        }
-
-        /* Compact message styles (applied when user toggles compact) */
-        .compact-messages .message-text {
-            font-size: 0.86rem !important;
-            padding: 6px 9px !important;
-            max-width: 140px !important;
-            border-radius: 12px;
-        }
-
-        .compact-messages .message-avatar {
-            width: 30px !important;
-            height: 30px !important;
-        }
-
-        .compact-messages .message-name {
-            font-size: 0.82rem !important;
-        }
-
-        .compact-messages .fullscreen-message {
-            transform-origin: center;
-            transform: translate(-50%,-50%) scale(0.92) !important;
-        }
     </style>
 </head>
 <body>
+    <!-- Welcome Screen -->
+    <button id="welcome-screen" type="button" onclick="enterTreeScene()" aria-label="Click Me">
+        <div id="click-text" class="red-glow-text">Click Me!</div>
+    </button>
+    
     <div id="snow-container"></div>
     
-    <!-- Welcome Screen -->
-    <div id="welcome-screen" onclick="enterTreeScene()">
-        <div class="welcome-text">Click Me!</div>
-    </div>
-    
-    <div id="music-control" onclick="toggleMusic()" style="display: none;">🎵</div>
-    <button id="change-avatar-btn" onclick="document.getElementById('avatar-input').click()" style="display: none; position: absolute; right: 70px; top:20px; z-index:100; background:rgba(255,255,255,0.08); color:var(--snow); border:1px solid rgba(255,255,255,0.08); padding:6px 10px; border-radius:8px;">更換頭像</button>
-    <input type="file" id="avatar-input" accept="image/*" style="display:none">
-    <!-- Mobile compact toggle (visible on small screens) -->
-    <div id="mobile-compact-toggle" onclick="toggleCompact()" title="縮小訊息">Aa</div>
+    <div id="music-control" onclick="toggleMusic()">🎵</div>
     <audio id="bgm" loop>
         <source src="christmas-music.mp3" type="audio/mpeg">
     </audio>
 
-    <!-- Final Scene (Tree) -->
-    <div id="final-scene">
-        <div id="final-message">聖誕快樂！🎄</div>
-        <div id="final-sub-message">這是Ovan送給你的聖誕樹</div>
+    <!-- Final Scene -->
+    <div id="final-scene" style="display: none;">
+        <div id="final-message">Merry Christmas 🎄</div>
+        <div id="final-sub-message">這是Ovan送的聖誕樹</div>
         <button id="bye-btn" onclick="showGoodbye()">明年見^^</button>
     </div>
 
@@ -911,74 +830,37 @@
     <div id="goodbye-screen"></div>
 
     <script>
-        // Mobile / compact styles controlled via class on documentElement
-        // Avatar source: can be updated by paste or file upload
-        // Use data URL stored in localStorage so it persists across page reloads
-        const AVATAR_KEY = 'avatarSrc';
-        let avatarSrc = localStorage.getItem(AVATAR_KEY) || 'https://cdn-icons-png.flaticon.com/512/4715/4715329.png';
+                // 動態為三個元素加上紅色發光 class
+                window.addEventListener('DOMContentLoaded', function() {
+                    // 先加原本的
+                    document.getElementById('final-message')?.classList.add('red-glow-text');
+                    document.getElementById('final-sub-message')?.classList.add('red-glow-text');
+                    document.getElementById('bye-btn')?.classList.add('red-glow-text');
+                    document.getElementById('click-text')?.classList.add('red-glow-text');
+                    // 新增：把所有有文字的元素都加上紅色發光
+                    document.querySelectorAll('body *').forEach(function(el) {
+                        // 只針對有純文字內容的元素
+                        if (el.childNodes.length === 1 && el.childNodes[0].nodeType === 3 && el.textContent.trim() !== '') {
+                            el.classList.add('red-glow-text');
+                        }
+                    });
+                });
 
-        // Update visible UI controls when music control shown
-        function showAvatarControls() {
-            const btn = document.getElementById('change-avatar-btn');
-            if (btn) btn.style.display = 'block';
-        }
-
-        // Convert File/Blob to dataURL and save
-        function fileToDataURL(file, callback) {
-            const reader = new FileReader();
-            reader.onload = function(ev) { callback(ev.target.result); };
-            reader.onerror = function() { callback(null); };
-            reader.readAsDataURL(file);
-        }
-
-        function setAvatarDataURL(dataURL) {
-            if (!dataURL) return;
-            avatarSrc = dataURL;
-            try { localStorage.setItem(AVATAR_KEY, avatarSrc); } catch (e) { console.warn('Could not save avatar to localStorage', e); }
-            console.log('Avatar updated and saved');
-        }
-
-        // Handle image paste from clipboard (reads blob and saves as dataURL)
-        document.addEventListener('paste', (e) => {
-            try {
-                const items = (e.clipboardData || window.clipboardData).items;
-                if (!items) return;
-                for (let i = 0; i < items.length; i++) {
-                    const item = items[i];
-                    if (item.type && item.type.indexOf('image') !== -1) {
-                        const blob = item.getAsFile();
-                        if (!blob) continue;
-                        fileToDataURL(blob, (dataURL) => {
-                            if (dataURL) setAvatarDataURL(dataURL);
-                        });
-                        break;
-                    }
+                // 若最後訊息是動態顯示，需在顯示時補加 class
+                function showFinalScene() {
+                    // ...existing code...
+                    document.getElementById('final-message')?.classList.add('red-glow-text');
+                    document.getElementById('final-sub-message')?.classList.add('red-glow-text');
                 }
-            } catch (err) { console.error('Paste handler error', err); }
-        });
-
-        // Handle file input (mobile-friendly upload)
-        const avatarInput = document.getElementById('avatar-input');
-        if (avatarInput) {
-            avatarInput.addEventListener('change', (ev) => {
-                const file = ev.target.files && ev.target.files[0];
-                if (!file) return;
-                fileToDataURL(file, (dataURL) => { if (dataURL) setAvatarDataURL(dataURL); });
-            });
+        function enterTreeScene() {
+            // 隐藏欢迎屏幕
+            document.getElementById('welcome-screen').classList.add('hidden');
+            // 改变背景为圣诞色
+            document.body.classList.add('tree-scene');
+            // 显示圣诞树场景
+            showFinalScene();
         }
-        function toggleCompact() {
-            document.documentElement.classList.toggle('compact-messages');
-        }
-
-        // enable compact by default on very small screens for readability
-        (function setDefaultCompactOnSmall() {
-            try {
-                if (window.innerWidth <= 420) {
-                    document.documentElement.classList.add('compact-messages');
-                }
-            } catch (e) {}
-        })();
-
+        
         function createSnow() {
             const snowContainer = document.getElementById('snow-container');
             const snowflake = document.createElement('div');
@@ -1011,28 +893,6 @@
                 musicBtn.textContent = '🎵';
                 isPlaying = true;
             }
-        }
-        
-        function enterTreeScene() {
-            const welcomeScreen = document.getElementById('welcome-screen');
-            welcomeScreen.classList.add('hidden');
-            
-            // 顯示音樂控制
-            document.getElementById('music-control').style.display = 'block';
-            
-            // 嘗試自動播放音樂
-            bgm.play().then(() => {
-                musicBtn.textContent = '🎵';
-                isPlaying = true;
-            }).catch(e => console.log('Audio autoplay failed:', e));
-            
-            // Wait until fade-out completes, then remove welcome screen and switch background
-            setTimeout(() => {
-                welcomeScreen.style.display = 'none';
-                // 切換背景 AFTER welcome screen hidden to avoid brief color flash
-                document.body.classList.add('tree-active');
-                showFinalScene();
-            }, 800);
         }
 
         function showFinalScene() {
@@ -1120,7 +980,6 @@
                 "記得按時吃飯喔", "天冷了多穿點", "別太在意別人的看法", "早點休息", "多喝熱水", 
                 "今天的你也超厲害的", "心情要保持愉快", "別太累了", "你已經做得很好了", "你已經做得很好了"
             ];
-            
             const goodbyeScreen = document.getElementById('goodbye-screen');
             const isMobile = window.innerWidth < 768;
             
@@ -1157,10 +1016,10 @@
                     messageDiv.className = 'fullscreen-message';
                     messageDiv.innerHTML = `
                         <div class="message-avatar">
-                            <img src="${avatarSrc}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/4715/4715329.png'" alt="Avatar">
+                            <img src="avatar.png.jpg" onerror="this.src='https://cdn-icons-png.flaticon.com/512/4715/4715329.png'" alt="Avatar">
                         </div>
                         <div class="message-content">
-                            <div class="message-name">Albert Mak</div>
+                            <div class="message-name">Ovan</div>
                             <div class="message-text">${blessing}</div>
                         </div>
                     `;
