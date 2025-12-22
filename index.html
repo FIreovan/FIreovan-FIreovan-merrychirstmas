@@ -361,6 +361,12 @@
             display: flex;
             align-items: flex-end;
             gap: 8px;
+            /* ensure messages render horizontally (not vertically) on mobile */
+            writing-mode: horizontal-tb;
+            -webkit-writing-mode: horizontal-tb;
+            text-orientation: mixed;
+            direction: ltr;
+            flex-wrap: nowrap;
             opacity: 0;
             transform-origin: center;
             transform: translate(-50%,-50%) scale(0.8);
@@ -472,6 +478,11 @@
                 0 6px 20px rgba(0,0,0,0.12),
                 0 3px 8px rgba(0,0,0,0.1);
             display: inline-block;
+            /* force horizontal text flow and prevent rotation/vertical layout */
+            writing-mode: horizontal-tb;
+            -webkit-writing-mode: horizontal-tb;
+            text-orientation: mixed;
+            transform: rotate(0deg) !important;
             white-space: normal;
             word-break: break-word;
             max-width: 320px;
@@ -1048,6 +1059,8 @@
             ];
             
             const goodbyeScreen = document.getElementById('goodbye-screen');
+            // configure your avatar filename/path here (place file in same folder as index.html)
+            const AVATAR_SRC = 'avatar.png';
             // Choose positions based on viewport width so mobile users see optimized layout
             const isMobile = window.innerWidth < 768;
             const positions = isMobile ? [
@@ -1082,7 +1095,7 @@
                     messageDiv.className = 'fullscreen-message';
                     messageDiv.innerHTML = `
                         <div class="message-avatar">
-                            <img src="avatar.png.jpg" onerror="this.src='https://cdn-icons-png.flaticon.com/512/4715/4715329.png'" alt="Avatar">
+                            <img src="${AVATAR_SRC}" onerror="(function(img){console.warn('avatar failed to load:', img.src); img.onerror=null; img.src='https://cdn-icons-png.flaticon.com/512/4715/4715329.png';})(this)" alt="Avatar">
                         </div>
                         <div class="message-content">
                             <div class="message-name">Ovan</div>
