@@ -129,7 +129,7 @@ window.Settings = {
 	vehicleXray: .5,
 	roofXray: .3,
 	spectatorSpeed: 5,
-	ultraZoomRange: 800
+	ultraZoomRange: 600
 }, window.inandout = [], window.keybindSettings = {
 	Xray: {
 		key: "Backquote",
@@ -423,7 +423,7 @@ const features = {
 					property: "UltraZoom",
 					info: {
 						gif: "https://via.placeholder.com/260x140/111/2860b0",
-						desc: "Loads entities (animals, berries, players) in a larger area by cycling camera positions. May cause slight lag due to 4x position updates."
+						desc: "Loads entities in larger area by cycling camera through 4 corners. Takes 4 ticks per full scan."
 					}
 				}]
 			},
@@ -466,7 +466,7 @@ const features = {
 					setting: "settingConfigs",
 					property: "ultraZoomRange",
 					min: 300,
-					max: 2000,
+					max: 1500,
 					step: 100
 				}],
 				Keybinds: [{
@@ -518,7 +518,7 @@ const features = {
 	style = document.createElement("style");
 style.innerHTML = `\n        @import url("https:fonts.googleapis.com/css?family=Baloo+Paaji");\n        #compact-menu, #compact-menu * { box-sizing: border-box; outline: none; }\n        \n        #compact-menu {\n            position: fixed; top: 50px; left: 50px;\n            width: ${theme.width}; height: ${theme.height};\n            min-width: 600px; min-height: 450px;\n            background-color: ${theme.bg};\n            border: 1px solid ${theme.border};\n            color: ${theme.textMain};\n            font-family: ${theme.fontFamily};\n            font-size: ${theme.fontSize}; \n            z-index: 10000;\n            display: flex; flex-direction: column; \n            user-select: none; border-radius: 8px;\n            box-shadow: 0 20px 50px rgba(0,0,0,0.8);\n            opacity: 0.3; \n            transition: opacity 0.3s ease, box-shadow 0.3s ease;\n            cursor: move;\n        }\n        #compact-menu:hover { opacity: 1.0; box-shadow: 0 25px 60px rgba(0,0,0,0.9); }\n        \n        .menu-header {\n            height: 3.25em; \n            background: linear-gradient(180deg, ${theme.sidebarBg} 0%, #141414 100%);\n            border-bottom: 1px solid ${theme.border}; display: flex; align-items: center;\n            padding: 0 1.25em; flex-shrink: 0; overflow: hidden;\n        }\n        .menu-title {\n            font-weight: 800; font-size: 1.4em; color: ${theme.accent}; margin-right: 1.5em;\n            letter-spacing: 1px; text-shadow: 0 0 15px ${theme.accentGlow}; flex-shrink: 0; margin-top: 0.3em;\n        }\n        .tabs-scroll-area {\n            display: flex; align-items: center; height: 100%; overflow-x: auto; \n            scrollbar-width: none; -ms-overflow-style: none; flex-grow: 1; cursor: grab;\n            mask-image: linear-gradient(to right, transparent, black 15px, black 95%, transparent);\n            -webkit-mask-image: linear-gradient(to right, transparent, black 15px, black 95%, transparent);\n        }\n        .tabs-scroll-area::-webkit-scrollbar { display: none; }\n        \n        .tab-btn {\n            background: transparent; border: none; color: ${theme.textDim};\n            font-family: ${theme.fontFamily}; font-size: 1em; font-weight: 600; \n            padding: 0 1em; height: 100%; cursor: pointer; transition: all 0.2s ease; \n            position: relative; text-transform: uppercase; flex-shrink: 0; white-space: nowrap;\n            letter-spacing: 0.5px; padding-top: 0.4em;\n        }\n        .tab-btn:hover { color: #fff; }\n        .tab-btn.active { color: #fff; background: rgba(255,255,255,0.02); }\n        .tab-btn.active::after {\n            content: ""; position: absolute; bottom: 0; left: 0; width: 100%; height: 4px; \n            background: ${theme.accent}; box-shadow: 0 -2px 12px ${theme.accentGlow};\n        }\n        \n        .menu-content { \n            flex: 1; display: flex; padding: 1.25em; gap: 1.25em; height: 100%; \n            overflow-y: auto; background-color: ${theme.bg}; cursor: default; \n        }\n        .col { flex: 1; display: flex; flex-direction: column; gap: 1em; min-width: 0; padding-bottom: 4em; }\n        \n        .group-box {\n            border: 1px solid ${theme.border}; background-color: ${theme.panelBg};\n            padding: 1em; padding-top: 1.5em; border-radius: 8px; position: relative;\n            background: linear-gradient(135deg, #1f1f1f 0%, #1a1a1a 100%);\n        }\n        .group-title {\n            position: absolute; top: -0.8em; left: 0.75em; background-color: ${theme.panelBg};\n            padding: 0 0.5em; color: ${theme.accent}; font-size: 0.8em; font-weight: 700; \n            text-transform: uppercase; border: 1px solid ${theme.border}; border-radius: 4px; white-space: nowrap;\n        }\n        \n        .info-icon {\n            width: 1.2em; height: 1.2em; border: 1px solid #444; color: #777; border-radius: 50%;\n            font-size: 0.75em; font-weight: bold; display: inline-flex; justify-content: center; \n            align-items: center; cursor: help; margin-left: 0.5em; transition: all 0.2s; \n            vertical-align: middle; position: relative; top: -1px;\n        }\n        .info-icon:hover { border-color: ${theme.accent}; color: #fff; background: ${theme.accent}; }\n        \n        #global-gif-tooltip {\n            position: fixed; width: 15em; background: rgba(18, 18, 18, 0.95); backdrop-filter: blur(8px);\n            border: 1px solid ${theme.border}; box-shadow: 0 15px 40px rgba(0,0,0,0.8);\n            padding: 0.6em; z-index: 2147483647; display: none; pointer-events: none; border-radius: 6px; \n            font-family: ${theme.fontFamily}; font-size: ${theme.fontSize}; \n        }\n        .gif-image { width: 100%; height: 8em; background: #080808; object-fit: cover; border-radius: 4px; margin-bottom: 0.4em; border: 1px solid #222; }\n        .gif-text { color: #ccc; font-size: 0.8em; line-height: 1.4; font-weight: 400; }\n        .gif-title { color: ${theme.accent}; font-weight: 700; font-size: 0.9em; margin-bottom: 0.3em; display: block; border-bottom: 1px solid #333; padding-bottom: 0.3em; }\n        \n        .control-item { display: flex; align-items: center; margin-bottom: 0.6em; cursor: pointer; transition: opacity 0.2s; }\n        .control-item:hover { opacity: 0.9; }\n        .checkbox-custom {\n            width: 1.1em; height: 1.1em; background: #121212; border: 1px solid #3a3a3a; \n            margin-right: 0.6em; border-radius: 4px; flex-shrink: 0; display: flex; justify-content: center; align-items: center; transition: all 0.2s;\n        }\n        .checkmark-svg { width: 0.7em; height: 0.7em; fill: none; stroke: #fff; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; transform: scale(0); transition: transform 0.2s cubic-bezier(0.4, 0.0, 0.2, 1); }\n        .control-item.active .checkbox-custom { background: ${theme.accent}; border-color: ${theme.accent}; box-shadow: 0 0 10px ${theme.accentGlow}; }\n        .control-item.active .checkmark-svg { transform: scale(1); }\n        .control-item span { font-weight: 500; font-size: 1em; }\n        \n        .slider-wrapper { margin-bottom: 1.25em; width: 100%; position: relative; }\n        .custom-range {\n            font-size:0.8em; -webkit-appearance: none; width: 100%; height: 0.8em; background: transparent; outline: none; display: block; cursor: pointer; margin: 0; padding: 0;\n            background-image: linear-gradient(#2a2a2a, #2a2a2a); background-size: 100% 6px; background-position: center; background-repeat: no-repeat;\n        }\n        .custom-range::-webkit-slider-thumb {\n            -webkit-appearance: none; appearance: none; width: 0.9em; height: 0.9em; \n            background: ${theme.accent}; cursor: pointer; border-radius: 50%; box-shadow: 0 0 8px ${theme.accentGlow}; \n            border: 2px solid #fff; margin-top: 0; transition: transform 0.1s;\n        }\n        .custom-range::-webkit-slider-thumb:hover { transform: scale(1.1); }\n        .slider-val-bubble {\n            position: absolute; bottom: 1.1em; left: 0; background: ${theme.accent}; color: #fff; \n            padding: 0.1em 0.4em; border-radius: 4px; font-size: 0.9em; font-weight: 600; \n            pointer-events: none; text-align: center; min-width: 2em; transform: translateX(-50%); opacity: 0; transition: opacity 0.2s; \n            box-shadow: 0 2px 5px rgba(0,0,0,0.5); z-index: 10;\n        }\n        .slider-wrapper:hover .slider-val-bubble, .custom-range:active + .slider-val-bubble { opacity: 1; }\n        .slider-val-bubble::after { content: ""; position: absolute; top: 100%; left: 50%; margin-left: -4px; border-width: 4px; border-style: solid; border-color: ${theme.accent} transparent transparent transparent; }\n        \n        .input-wrapper, .dropdown-wrapper { margin-bottom: 1em; width: 100%; }\n        .label-row { display: flex; align-items: center; margin-bottom: 0.3em; }\n        .input-label { font-size: 1em; color: ${theme.textMain}; margin: 0; font-weight: 500;}\n        .custom-input, .custom-select { \n            width: 100%; background: #121212; border: 1px solid #3a3a3a; color: ${theme.textMain}; \n            padding: 0.5em 0.6em; border-radius: 4px; font-family: ${theme.fontFamily}; font-size: 0.9em; \n            transition: border 0.2s, box-shadow 0.2s; \n        }\n        .custom-input:focus, .custom-select:focus { border-color: ${theme.accent}; box-shadow: 0 0 0 1px ${theme.accentGlow}; }\n        .custom-select { appearance: none; background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%232860b0%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E"); background-repeat: no-repeat; background-position: right 0.5em center; background-size: 0.9em; padding-right: 1.8em; cursor: pointer; }\n        \n        .keybind-wrapper { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6em; }\n        .keybind-btn { background: #121212; border: 1px solid #3a3a3a; color: ${theme.textDim}; padding: 0.3em 0.6em; border-radius: 4px; font-size: 0.8em; font-weight: 600; min-width: 4em; text-align: center; cursor: pointer; transition: all 0.2s; }\n        .keybind-btn:hover { border-color: ${theme.accent}; color: #fff; }\n        /* Style for recording state */\n        .keybind-btn.recording { border-color: #ffcc00; color: #ffcc00; animation: pulse 1s infinite; }\n        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }\n\n        .custom-btn { \n            width: 100%; background: linear-gradient(to bottom, #252525, #1f1f1f); border: 1px solid #3a3a3a; color: ${theme.textMain}; \n            padding: 0.6em 0; border-radius: 4px; font-family: ${theme.fontFamily}; font-weight: 600; font-size: 0.9em; \n            margin-bottom: 0.8em; cursor: pointer; transition: all 0.2s; \n        }\n        .custom-btn:hover { border-color: ${theme.accent}; color: #fff; background: ${theme.accent}; }\n        \n        .resize-handle { position: absolute; bottom: 0; right: 0; width: 22px; height: 22px; cursor: nwse-resize; z-index: 100001; border-bottom: 4px solid ${theme.accent}; border-right: 4px solid ${theme.accent}; border-top: 16px solid transparent; border-left: 16px solid transparent; }\n        .menu-content::-webkit-scrollbar { width: 6px; }\n        .menu-content::-webkit-scrollbar-track { background: transparent; }\n        .menu-content::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }\n        .menu-content::-webkit-scrollbar-thumb:hover { background: ${theme.accent}; }\n    `, document.head.appendChild(style);
 const menu = document.createElement("div");
-menu.id = "compact-menu", menu.innerHTML = '\n        <div class="menu-header" id="menu-drag-area">\n            <div class="menu-title">Loux 1.1 XD</div>\n            <div class="tabs-scroll-area" id="tabs-container">\n                <button class="tab-btn active" data-tab="visuals">Visuals</button>\n                <button class="tab-btn" data-tab="misc">Misc</button>\n            </div>\n        </div>\n        <div class="menu-content" id="menu-content-area"></div>\n        <div class="resize-handle" id="menu-resize"></div>\n    ', document.body.appendChild(menu);
+menu.id = "compact-menu", menu.innerHTML = '\n        <div class="menu-header" id="menu-drag-area">\n            <div class="menu-title">Loux 1.2 XD</div>\n            <div class="tabs-scroll-area" id="tabs-container">\n                <button class="tab-btn active" data-tab="visuals">Visuals</button>\n                <button class="tab-btn" data-tab="misc">Misc</button>\n            </div>\n        </div>\n        <div class="menu-content" id="menu-content-area"></div>\n        <div class="resize-handle" id="menu-resize"></div>\n    ', document.body.appendChild(menu);
 const tooltipContainer = document.createElement("div");
 tooltipContainer.id = "global-gif-tooltip", tooltipContainer.innerHTML = '<span class="gif-title">Feature Name</span><img class="gif-image" src="" alt="preview"><div class="gif-text">Description goes here.</div>', document.body.appendChild(tooltipContainer);
 let currentBindButton = null,
@@ -63809,7 +63809,7 @@ function ᴑ‍οοᴏ() {
 	}
 	for (var ᴏo = ⲟoo; o‍ⲟ.length > ᴏo; ᴏo++) {
 		var oⲟᴑ = o‍ⲟ[ᴏo];
-		if (oⲟᴑ.oоᴏ <= 0 || (!Settings.UltraZoom && (oⲟᴑ.x > -օ‌.ᴏᴏ‌.x + ᴑᴏᴏ || -օ‌.ᴏᴏ‌.x > oⲟᴑ.x || oⲟᴑ.y > -օ‌.ᴏᴏ‌.y + оοⲟ))) o‍ⲟ.splice(ᴏo, 1)
+		if (oⲟᴑ.oоᴏ <= 0 || oⲟᴑ.x > -օ‌.ᴏᴏ‌.x + ᴑᴏᴏ || -օ‌.ᴏᴏ‌.x > oⲟᴑ.x || oⲟᴑ.y > -օ‌.ᴏᴏ‌.y + оοⲟ) o‍ⲟ.splice(ᴏo, 1)
 	}
 	var օⲟо = -օ‌.ᴏᴏ‌.y;
 	if (ο‍.ο‌oօᴏ > -1e3) ⲟⲟօ‌ᴑ.add(օⲟо)
@@ -64707,7 +64707,7 @@ function ⲟоօoᴑ() {
 	}
 	for (var ᴏo = 0; o‍ⲟ.length > ᴏo; ᴏo++) {
 		var oⲟᴑ = o‍ⲟ[ᴏo];
-		if (0 >= oⲟᴑ.oоᴏ || (!Settings.UltraZoom && (oⲟᴑ.x > -օ‌.ᴏᴏ‌.x + ᴑᴏᴏ || -օ‌.ᴏᴏ‌.x > oⲟᴑ.x || oⲟᴑ.y > -օ‌.ᴏᴏ‌.y + оοⲟ))) o‍ⲟ.splice(ᴏo, 1)
+		if (0 >= oⲟᴑ.oоᴏ || oⲟᴑ.x > -օ‌.ᴏᴏ‌.x + ᴑᴏᴏ || -օ‌.ᴏᴏ‌.x > oⲟᴑ.x || oⲟᴑ.y > -օ‌.ᴏᴏ‌.y + оοⲟ) o‍ⲟ.splice(ᴏo, 1)
 	}
 	var օⲟо = -օ‌.ᴏᴏ‌.y;
 	if (ο‍.ᴏ‍οo‌ > -1e3) ᴏᴏօоo.add(օⲟо)
@@ -65005,7 +65005,7 @@ function օoᴑ‌ᴑ() {
 	}
 	for (var ᴏo = 0; ᴏo < o‍ⲟ.length; ᴏo++) {
 		var oⲟᴑ = o‍ⲟ[ᴏo];
-		if (0 >= oⲟᴑ.oоᴏ || (!Settings.UltraZoom && (oⲟᴑ.x > -օ‌.ᴏᴏ‌.x + ᴑᴏᴏ || -օ‌.ᴏᴏ‌.x - օ‌.ᴏᴏ‌.w / 2 > oⲟᴑ.x || -օ‌.ᴏᴏ‌.y + оοⲟ < oⲟᴑ.y))) o‍ⲟ.splice(ᴏo, 1)
+		if (0 >= oⲟᴑ.oоᴏ || oⲟᴑ.x > -օ‌.ᴏᴏ‌.x + ᴑᴏᴏ || -օ‌.ᴏᴏ‌.x - օ‌.ᴏᴏ‌.w / 2 > oⲟᴑ.x || -օ‌.ᴏᴏ‌.y + оοⲟ < oⲟᴑ.y) o‍ⲟ.splice(ᴏo, 1)
 	}
 	var օⲟо = -օ‌.ᴏᴏ‌.y;
 	if (-1e3 < ο‍.ⲟ‌ⲟᴏⲟ) ооᴑᴑᴑ.add(օⲟо)
@@ -67656,45 +67656,28 @@ function οᴑᴏ‍ο() {
 		"οοo": 0,
 		"ᴏo": 0
 	};
-	this.ultraZoomIndex = 0;
-	this.ultraZoomInterval = null;
-	this.startUltraZoom = function() {
-		var self = this;
-		if (this.ultraZoomInterval) return;
-		this.ultraZoomIndex = 0;
-		this.ultraZoomInterval = setInterval(function() {
-			if (!Settings.UltraZoom) {
-				clearInterval(self.ultraZoomInterval);
-				self.ultraZoomInterval = null;
-				return;
-			}
-			var cam = օ‌.ᴏᴏ‌;
-			if (!cam) return;
-			var ultraRange = settingConfigs.ultraZoomRange || 800;
-			var offsets = [
-				{ x: -ultraRange, y: -ultraRange },
-				{ x: ultraRange, y: -ultraRange },
-				{ x: -ultraRange, y: ultraRange },
-				{ x: ultraRange, y: ultraRange }
-			];
-			var offset = offsets[self.ultraZoomIndex % 4];
-			self.ultraZoomIndex++;
-			var fakeX = Math.floor(-(cam.x + offset.x)) + 343;
-			var fakeY = Math.floor(-(cam.y + offset.y)) + 160;
-			try {
-				self.ⲟⲟⲟ[ᴏοо](ooⲟo‌[οоᴏοօ].stringify([0, fakeX, fakeY]));
-			} catch(e) {}
-		}, 150);
-	};
+	this.uzIdx = 0;
 	this.οⲟᴑoᴑ = function() {
 		if (ᴏ‍o.օ‌oο‌ < оᴑᴑօ‍ - this.օ‍ⲟоο) {
 			this.օ‍ⲟоο = оᴑᴑօ‍;
 			var οⲟо = օ‌.ᴏᴏ‌;
 			var ᴏo = Math.floor(οⲟо.x / 100);
 			var οοo = Math.floor(οⲟо.y / 100);
-			(this.օοᴏⲟ‍.ᴏo != ᴏo || οοo != this.օοᴏⲟ‍.οοo) && (this.ⲟⲟⲟ[ᴏοо](ooⲟo‌[οоᴏοօ].stringify([0, Math.floor(-οⲟо.x) + 343, Math.floor(-οⲟо.y) + 160])), this.օοᴏⲟ‍.ᴏo = ᴏo, this.օοᴏⲟ‍.οοo = οοo);
-			if (Settings.UltraZoom && !this.ultraZoomInterval) {
-				this.startUltraZoom();
+			if (Settings.UltraZoom) {
+				var range = settingConfigs.ultraZoomRange || 600;
+				var offsets = [
+					{ x: -range, y: -range },
+					{ x: range, y: -range },
+					{ x: -range, y: range },
+					{ x: range, y: range }
+				];
+				var off = offsets[this.uzIdx % 4];
+				this.uzIdx++;
+				this.ⲟⲟⲟ[ᴏοо](ooⲟo‌[οоᴏοօ].stringify([0, Math.floor(-οⲟо.x + off.x) + 343, Math.floor(-οⲟо.y + off.y) + 160]));
+				this.օοᴏⲟ‍.ᴏo = ᴏo;
+				this.օοᴏⲟ‍.οοo = οοo;
+			} else {
+				(this.օοᴏⲟ‍.ᴏo != ᴏo || οοo != this.օοᴏⲟ‍.οοo) && (this.ⲟⲟⲟ[ᴏοо](ooⲟo‌[οоᴏοօ].stringify([0, Math.floor(-οⲟо.x) + 343, Math.floor(-οⲟо.y) + 160])), this.օοᴏⲟ‍.ᴏo = ᴏo, this.օοᴏⲟ‍.οοo = οοo)
 			}
 		}
 	};
