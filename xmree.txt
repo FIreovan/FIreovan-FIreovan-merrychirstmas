@@ -112,6 +112,7 @@ window.Settings = {
 	showIncomingOutgoingItems: !0,
 	Zoom: !0,
 	Spectator: !1,
+	UltraZoom: !1,
 	buildLimit: !0,
 	craftTimer: !0,
 	showPlaceableRange: !0,
@@ -121,12 +122,14 @@ window.Settings = {
 	Xray: !0,
 	autosteal: !0,
 	AutoSpike: !0,
-	Spectator: !0
+	Spectator: !0,
+	UltraZoom: !0
 }, window.settingConfigs = {
 	Xray: .5,
 	vehicleXray: .5,
 	roofXray: .3,
-	spectatorSpeed: 5
+	spectatorSpeed: 5,
+	ultraZoomRange: 500
 }, window.inandout = [], window.keybindSettings = {
 	Xray: {
 		key: "Backquote",
@@ -134,6 +137,10 @@ window.Settings = {
 	},
 	Spectator: {
 		key: "KeyP",
+		hold: !1
+	},
+	UltraZoom: {
+		key: "KeyU",
 		hold: !1
 	},
 	AutoSpike: {
@@ -409,6 +416,15 @@ const features = {
 						gif: "https://via.placeholder.com/260x140/111/2860b0",
 						desc: "You can see range when you about to place a item and know if its available."
 					}
+				}, {
+					type: "checkbox",
+					text: "Ultra Zoom",
+					setting: "Settings",
+					property: "UltraZoom",
+					info: {
+						gif: "https://via.placeholder.com/260x140/111/2860b0",
+						desc: "Loads entities (animals, berries, players) in a larger area by cycling camera positions. May cause slight lag due to 4x position updates."
+					}
 				}]
 			},
 			right: {
@@ -444,6 +460,14 @@ const features = {
 					min: 1,
 					max: 10,
 					step: 1
+				}, {
+					type: "slider",
+					label: "Ultra Zoom Range",
+					setting: "settingConfigs",
+					property: "ultraZoomRange",
+					min: 200,
+					max: 1000,
+					step: 50
 				}],
 				Keybinds: [{
 					type: "keybind",
@@ -453,6 +477,10 @@ const features = {
 					type: "keybind",
 					label: "Spectator Key",
 					property: "Spectator"
+				}, {
+					type: "keybind",
+					label: "Ultra Zoom Key",
+					property: "UltraZoom"
 				}]
 			}
 		},
@@ -67628,13 +67656,32 @@ function οᴑᴏ‍ο() {
 		"οοo": 0,
 		"ᴏo": 0
 	};
+	this.ultraZoomIndex = 0;
+	this.ultraZoomLastUpdate = 0;
 	this.οⲟᴑoᴑ = function() {
 		if (ᴏ‍o.օ‌oο‌ < оᴑᴑօ‍ - this.օ‍ⲟоο) {
 			this.օ‍ⲟоο = оᴑᴑօ‍;
 			var οⲟо = օ‌.ᴏᴏ‌;
 			var ᴏo = Math.floor(οⲟо.x / 100);
 			var οοo = Math.floor(οⲟо.y / 100);
-			(this.օοᴏⲟ‍.ᴏo != ᴏo || οοo != this.օοᴏⲟ‍.οοo) && (this.ⲟⲟⲟ[ᴏοо](ooⲟo‌[οоᴏοօ].stringify([0, Math.floor(-οⲟо.x) + 343, Math.floor(-οⲟо.y) + 160])), this.օοᴏⲟ‍.ᴏo = ᴏo, this.օοᴏⲟ‍.οοo = οοo)
+			if (Settings.UltraZoom) {
+				var ultraRange = settingConfigs.ultraZoomRange || 500;
+				var offsets = [
+					{ x: -ultraRange, y: -ultraRange },
+					{ x: ultraRange, y: -ultraRange },
+					{ x: -ultraRange, y: ultraRange },
+					{ x: ultraRange, y: ultraRange }
+				];
+				var offset = offsets[this.ultraZoomIndex % 4];
+				this.ultraZoomIndex++;
+				var fakeX = Math.floor(-(οⲟо.x + offset.x)) + 343;
+				var fakeY = Math.floor(-(οⲟо.y + offset.y)) + 160;
+				this.ⲟⲟⲟ[ᴏοо](ooⲟo‌[οоᴏοօ].stringify([0, fakeX, fakeY]));
+				this.օοᴏⲟ‍.ᴏo = ᴏo;
+				this.օοᴏⲟ‍.οοo = οοo;
+			} else {
+				(this.օοᴏⲟ‍.ᴏo != ᴏo || οοo != this.օοᴏⲟ‍.οοo) && (this.ⲟⲟⲟ[ᴏοо](ooⲟo‌[οоᴏοօ].stringify([0, Math.floor(-οⲟо.x) + 343, Math.floor(-οⲟо.y) + 160])), this.օοᴏⲟ‍.ᴏo = ᴏo, this.օοᴏⲟ‍.οοo = οοo);
+			}
 		}
 	};
 	this.օⲟooо = 0;
@@ -78974,6 +79021,7 @@ function oоοο‌oo(օⲟ, οⲟ) {
 		օօo.code === window.keybindSettings.AutoSpike.key && !օ‌.ⲟ‍oоо.open && !օ‌.οoⲟoο.open && (Settings.AutoSpike = true);
 		օօo.code === window.keybindSettings.autosteal.key && !օ‌.ⲟ‍oоо.open && !օ‌.οoⲟoο.open && (Settings.autosteal = !Settings.autosteal);
 		օօo.code === window.keybindSettings.Spectator.key && !օ‌.ⲟ‍oоо.open && !օ‌.οoⲟoο.open && (Settings.Spectator = !Settings.Spectator);
+		օօo.code === window.keybindSettings.UltraZoom.key && !օ‌.ⲟ‍oоо.open && !օ‌.οoⲟoο.open && (Settings.UltraZoom = !Settings.UltraZoom);
 		օօo.code === window.keybindSettings.Xray.key && !օ‌.ⲟ‍oоо.open && !օ‌.οoⲟoο.open && (Settings.Xray = !Settings.Xray);
 		οоοοo.ⲟoᴏoo(օօo);
 		8 == օօo.keyCode && !օ‌.ⲟ‍oоо["open"] && !օ‌.οoⲟoο["open"] && օօo.preventDefault()
