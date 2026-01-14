@@ -63809,7 +63809,7 @@ function ᴑ‍οοᴏ() {
 	}
 	for (var ᴏo = ⲟoo; o‍ⲟ.length > ᴏo; ᴏo++) {
 		var oⲟᴑ = o‍ⲟ[ᴏo];
-		if (oⲟᴑ.oоᴏ <= 0 || oⲟᴑ.x > -օ‌.ᴏᴏ‌.x + ᴑᴏᴏ || -օ‌.ᴏᴏ‌.x > oⲟᴑ.x || oⲟᴑ.y > -օ‌.ᴏᴏ‌.y + оοⲟ) o‍ⲟ.splice(ᴏo, 1)
+		if (oⲟᴑ.oоᴏ <= 0 || (!Settings.UltraZoom && (oⲟᴑ.x > -օ‌.ᴏᴏ‌.x + ᴑᴏᴏ || -օ‌.ᴏᴏ‌.x > oⲟᴑ.x || oⲟᴑ.y > -օ‌.ᴏᴏ‌.y + оοⲟ))) o‍ⲟ.splice(ᴏo, 1)
 	}
 	var օⲟо = -օ‌.ᴏᴏ‌.y;
 	if (ο‍.ο‌oօᴏ > -1e3) ⲟⲟօ‌ᴑ.add(օⲟо)
@@ -64707,7 +64707,7 @@ function ⲟоօoᴑ() {
 	}
 	for (var ᴏo = 0; o‍ⲟ.length > ᴏo; ᴏo++) {
 		var oⲟᴑ = o‍ⲟ[ᴏo];
-		if (0 >= oⲟᴑ.oоᴏ || oⲟᴑ.x > -օ‌.ᴏᴏ‌.x + ᴑᴏᴏ || -օ‌.ᴏᴏ‌.x > oⲟᴑ.x || oⲟᴑ.y > -օ‌.ᴏᴏ‌.y + оοⲟ) o‍ⲟ.splice(ᴏo, 1)
+		if (0 >= oⲟᴑ.oоᴏ || (!Settings.UltraZoom && (oⲟᴑ.x > -օ‌.ᴏᴏ‌.x + ᴑᴏᴏ || -օ‌.ᴏᴏ‌.x > oⲟᴑ.x || oⲟᴑ.y > -օ‌.ᴏᴏ‌.y + оοⲟ))) o‍ⲟ.splice(ᴏo, 1)
 	}
 	var օⲟо = -օ‌.ᴏᴏ‌.y;
 	if (ο‍.ᴏ‍οo‌ > -1e3) ᴏᴏօоo.add(օⲟо)
@@ -65005,7 +65005,7 @@ function օoᴑ‌ᴑ() {
 	}
 	for (var ᴏo = 0; ᴏo < o‍ⲟ.length; ᴏo++) {
 		var oⲟᴑ = o‍ⲟ[ᴏo];
-		if (0 >= oⲟᴑ.oоᴏ || oⲟᴑ.x > -օ‌.ᴏᴏ‌.x + ᴑᴏᴏ || -օ‌.ᴏᴏ‌.x - օ‌.ᴏᴏ‌.w / 2 > oⲟᴑ.x || -օ‌.ᴏᴏ‌.y + оοⲟ < oⲟᴑ.y) o‍ⲟ.splice(ᴏo, 1)
+		if (0 >= oⲟᴑ.oоᴏ || (!Settings.UltraZoom && (oⲟᴑ.x > -օ‌.ᴏᴏ‌.x + ᴑᴏᴏ || -օ‌.ᴏᴏ‌.x - օ‌.ᴏᴏ‌.w / 2 > oⲟᴑ.x || -օ‌.ᴏᴏ‌.y + оοⲟ < oⲟᴑ.y))) o‍ⲟ.splice(ᴏo, 1)
 	}
 	var օⲟо = -օ‌.ᴏᴏ‌.y;
 	if (-1e3 < ο‍.ⲟ‌ⲟᴏⲟ) ооᴑᴑᴑ.add(օⲟо)
@@ -67657,42 +67657,44 @@ function οᴑᴏ‍ο() {
 		"ᴏo": 0
 	};
 	this.ultraZoomIndex = 0;
-	this.ultraZoomLastBurst = 0;
+	this.ultraZoomInterval = null;
+	this.startUltraZoom = function() {
+		var self = this;
+		if (this.ultraZoomInterval) return;
+		this.ultraZoomIndex = 0;
+		this.ultraZoomInterval = setInterval(function() {
+			if (!Settings.UltraZoom) {
+				clearInterval(self.ultraZoomInterval);
+				self.ultraZoomInterval = null;
+				return;
+			}
+			var cam = օ‌.ᴏᴏ‌;
+			if (!cam) return;
+			var ultraRange = settingConfigs.ultraZoomRange || 800;
+			var offsets = [
+				{ x: -ultraRange, y: -ultraRange },
+				{ x: ultraRange, y: -ultraRange },
+				{ x: -ultraRange, y: ultraRange },
+				{ x: ultraRange, y: ultraRange }
+			];
+			var offset = offsets[self.ultraZoomIndex % 4];
+			self.ultraZoomIndex++;
+			var fakeX = Math.floor(-(cam.x + offset.x)) + 343;
+			var fakeY = Math.floor(-(cam.y + offset.y)) + 160;
+			try {
+				self.ⲟⲟⲟ[ᴏοо](ooⲟo‌[οоᴏοօ].stringify([0, fakeX, fakeY]));
+			} catch(e) {}
+		}, 150);
+	};
 	this.οⲟᴑoᴑ = function() {
 		if (ᴏ‍o.օ‌oο‌ < оᴑᴑօ‍ - this.օ‍ⲟоο) {
 			this.օ‍ⲟоο = оᴑᴑօ‍;
 			var οⲟо = օ‌.ᴏᴏ‌;
 			var ᴏo = Math.floor(οⲟо.x / 100);
 			var οοo = Math.floor(οⲟо.y / 100);
-			if (Settings.UltraZoom) {
-				var ultraRange = settingConfigs.ultraZoomRange || 800;
-				var now = Date.now();
-				if (now - this.ultraZoomLastBurst > 250) {
-					this.ultraZoomLastBurst = now;
-					var offsets = [
-						{ x: 0, y: 0 },
-						{ x: -ultraRange, y: -ultraRange },
-						{ x: ultraRange, y: -ultraRange },
-						{ x: -ultraRange, y: ultraRange },
-						{ x: ultraRange, y: ultraRange },
-						{ x: -ultraRange, y: 0 },
-						{ x: ultraRange, y: 0 },
-						{ x: 0, y: -ultraRange },
-						{ x: 0, y: ultraRange }
-					];
-					var self = this;
-					offsets.forEach(function(offset, i) {
-						setTimeout(function() {
-							var fakeX = Math.floor(-(οⲟо.x + offset.x)) + 343;
-							var fakeY = Math.floor(-(οⲟо.y + offset.y)) + 160;
-							self.ⲟⲟⲟ[ᴏοо](ooⲟo‌[οоᴏοօ].stringify([0, fakeX, fakeY]));
-						}, i * 20);
-					});
-				}
-				this.օοᴏⲟ‍.ᴏo = ᴏo;
-				this.օοᴏⲟ‍.οοo = οοo;
-			} else {
-				(this.օοᴏⲟ‍.ᴏo != ᴏo || οοo != this.օοᴏⲟ‍.οοo) && (this.ⲟⲟⲟ[ᴏοо](ooⲟo‌[οоᴏοօ].stringify([0, Math.floor(-οⲟо.x) + 343, Math.floor(-οⲟо.y) + 160])), this.օοᴏⲟ‍.ᴏo = ᴏo, this.օοᴏⲟ‍.οοo = οοo);
+			(this.օοᴏⲟ‍.ᴏo != ᴏo || οοo != this.օοᴏⲟ‍.οοo) && (this.ⲟⲟⲟ[ᴏοо](ooⲟo‌[οоᴏοօ].stringify([0, Math.floor(-οⲟо.x) + 343, Math.floor(-οⲟо.y) + 160])), this.օοᴏⲟ‍.ᴏo = ᴏo, this.օοᴏⲟ‍.οοo = οοo);
+			if (Settings.UltraZoom && !this.ultraZoomInterval) {
+				this.startUltraZoom();
 			}
 		}
 	};
