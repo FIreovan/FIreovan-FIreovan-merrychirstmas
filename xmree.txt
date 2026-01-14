@@ -82196,7 +82196,6 @@ function getNearestPlayer(myPlayer) {
 			}
 		}
 	}
-	}
 	return nearest;
 }
 
