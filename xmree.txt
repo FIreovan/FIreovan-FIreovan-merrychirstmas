@@ -129,7 +129,7 @@ window.Settings = {
 	vehicleXray: .5,
 	roofXray: .3,
 	spectatorSpeed: 5,
-	ultraZoomRange: 500
+	ultraZoomRange: 800
 }, window.inandout = [], window.keybindSettings = {
 	Xray: {
 		key: "Backquote",
@@ -465,9 +465,9 @@ const features = {
 					label: "Ultra Zoom Range",
 					setting: "settingConfigs",
 					property: "ultraZoomRange",
-					min: 200,
-					max: 1000,
-					step: 50
+					min: 300,
+					max: 2000,
+					step: 100
 				}],
 				Keybinds: [{
 					type: "keybind",
@@ -67657,7 +67657,7 @@ function οᴑᴏ‍ο() {
 		"ᴏo": 0
 	};
 	this.ultraZoomIndex = 0;
-	this.ultraZoomLastUpdate = 0;
+	this.ultraZoomLastBurst = 0;
 	this.οⲟᴑoᴑ = function() {
 		if (ᴏ‍o.օ‌oο‌ < оᴑᴑօ‍ - this.օ‍ⲟоο) {
 			this.օ‍ⲟоο = оᴑᴑօ‍;
@@ -67665,18 +67665,30 @@ function οᴑᴏ‍ο() {
 			var ᴏo = Math.floor(οⲟо.x / 100);
 			var οοo = Math.floor(οⲟо.y / 100);
 			if (Settings.UltraZoom) {
-				var ultraRange = settingConfigs.ultraZoomRange || 500;
-				var offsets = [
-					{ x: -ultraRange, y: -ultraRange },
-					{ x: ultraRange, y: -ultraRange },
-					{ x: -ultraRange, y: ultraRange },
-					{ x: ultraRange, y: ultraRange }
-				];
-				var offset = offsets[this.ultraZoomIndex % 4];
-				this.ultraZoomIndex++;
-				var fakeX = Math.floor(-(οⲟо.x + offset.x)) + 343;
-				var fakeY = Math.floor(-(οⲟо.y + offset.y)) + 160;
-				this.ⲟⲟⲟ[ᴏοо](ooⲟo‌[οоᴏοօ].stringify([0, fakeX, fakeY]));
+				var ultraRange = settingConfigs.ultraZoomRange || 800;
+				var now = Date.now();
+				if (now - this.ultraZoomLastBurst > 250) {
+					this.ultraZoomLastBurst = now;
+					var offsets = [
+						{ x: 0, y: 0 },
+						{ x: -ultraRange, y: -ultraRange },
+						{ x: ultraRange, y: -ultraRange },
+						{ x: -ultraRange, y: ultraRange },
+						{ x: ultraRange, y: ultraRange },
+						{ x: -ultraRange, y: 0 },
+						{ x: ultraRange, y: 0 },
+						{ x: 0, y: -ultraRange },
+						{ x: 0, y: ultraRange }
+					];
+					var self = this;
+					offsets.forEach(function(offset, i) {
+						setTimeout(function() {
+							var fakeX = Math.floor(-(οⲟо.x + offset.x)) + 343;
+							var fakeY = Math.floor(-(οⲟо.y + offset.y)) + 160;
+							self.ⲟⲟⲟ[ᴏοо](ooⲟo‌[οоᴏοօ].stringify([0, fakeX, fakeY]));
+						}, i * 20);
+					});
+				}
 				this.օοᴏⲟ‍.ᴏo = ᴏo;
 				this.օοᴏⲟ‍.οοo = οοo;
 			} else {
