@@ -1021,7 +1021,7 @@ const features = {
 	style = document.createElement("style");
 style.innerHTML = `\n        @import url("https:fonts.googleapis.com/css?family=Baloo+Paaji");\n        #compact-menu, #compact-menu * { box-sizing: border-box; outline: none; }\n        \n        #compact-menu {\n            position: fixed; top: 50px; left: 50px;\n            width: ${theme.width}; height: ${theme.height};\n            min-width: 600px; min-height: 450px;\n            background-color: ${theme.bg};\n            border: 1px solid ${theme.border};\n            color: ${theme.textMain};\n            font-family: ${theme.fontFamily};\n            font-size: ${theme.fontSize}; \n            z-index: 10000;\n            display: flex; flex-direction: column; \n            user-select: none; border-radius: 8px;\n            box-shadow: 0 20px 50px rgba(0,0,0,0.8);\n            opacity: 0.3; \n            transition: opacity 0.3s ease, box-shadow 0.3s ease;\n            cursor: move;\n        }\n        #compact-menu:hover { opacity: 1.0; box-shadow: 0 25px 60px rgba(0,0,0,0.9); }\n        \n        .menu-header {\n            height: 3.25em; \n            background: linear-gradient(180deg, ${theme.sidebarBg} 0%, #141414 100%);\n            border-bottom: 1px solid ${theme.border}; display: flex; align-items: center;\n            padding: 0 1.25em; flex-shrink: 0; overflow: hidden;\n        }\n        .menu-title {\n            font-weight: 800; font-size: 1.4em; color: ${theme.accent}; margin-right: 1.5em;\n            letter-spacing: 1px; text-shadow: 0 0 15px ${theme.accentGlow}; flex-shrink: 0; margin-top: 0.3em;\n        }\n        .tabs-scroll-area {\n            display: flex; align-items: center; height: 100%; overflow-x: auto; \n            scrollbar-width: none; -ms-overflow-style: none; flex-grow: 1; cursor: grab;\n            mask-image: linear-gradient(to right, transparent, black 15px, black 95%, transparent);\n            -webkit-mask-image: linear-gradient(to right, transparent, black 15px, black 95%, transparent);\n        }\n        .tabs-scroll-area::-webkit-scrollbar { display: none; }\n        \n        .tab-btn {\n            background: transparent; border: none; color: ${theme.textDim};\n            font-family: ${theme.fontFamily}; font-size: 1em; font-weight: 600; \n            padding: 0 1em; height: 100%; cursor: pointer; transition: all 0.2s ease; \n            position: relative; text-transform: uppercase; flex-shrink: 0; white-space: nowrap;\n            letter-spacing: 0.5px; padding-top: 0.4em;\n        }\n        .tab-btn:hover { color: #fff; }\n        .tab-btn.active { color: #fff; background: rgba(255,255,255,0.02); }\n        .tab-btn.active::after {\n            content: ""; position: absolute; bottom: 0; left: 0; width: 100%; height: 4px; \n            background: ${theme.accent}; box-shadow: 0 -2px 12px ${theme.accentGlow};\n        }\n        \n        .menu-content { \n            flex: 1; display: flex; padding: 1.25em; gap: 1.25em; height: 100%; \n            overflow-y: auto; background-color: ${theme.bg}; cursor: default; \n        }\n        .col { flex: 1; display: flex; flex-direction: column; gap: 1em; min-width: 0; padding-bottom: 4em; }\n        \n        .group-box {\n            border: 1px solid ${theme.border}; background-color: ${theme.panelBg};\n            padding: 1em; padding-top: 1.5em; border-radius: 8px; position: relative;\n            background: linear-gradient(135deg, #1f1f1f 0%, #1a1a1a 100%);\n        }\n        .group-title {\n            position: absolute; top: -0.8em; left: 0.75em; background-color: ${theme.panelBg};\n            padding: 0 0.5em; color: ${theme.accent}; font-size: 0.8em; font-weight: 700; \n            text-transform: uppercase; border: 1px solid ${theme.border}; border-radius: 4px; white-space: nowrap;\n        }\n        \n        .info-icon {\n            width: 1.2em; height: 1.2em; border: 1px solid #444; color: #777; border-radius: 50%;\n            font-size: 0.75em; font-weight: bold; display: inline-flex; justify-content: center; \n            align-items: center; cursor: help; margin-left: 0.5em; transition: all 0.2s; \n            vertical-align: middle; position: relative; top: -1px;\n        }\n        .info-icon:hover { border-color: ${theme.accent}; color: #fff; background: ${theme.accent}; }\n        \n        #global-gif-tooltip {\n            position: fixed; width: 15em; background: rgba(18, 18, 18, 0.95); backdrop-filter: blur(8px);\n            border: 1px solid ${theme.border}; box-shadow: 0 15px 40px rgba(0,0,0,0.8);\n            padding: 0.6em; z-index: 2147483647; display: none; pointer-events: none; border-radius: 6px; \n            font-family: ${theme.fontFamily}; font-size: ${theme.fontSize}; \n        }\n        .gif-image { width: 100%; height: 8em; background: #080808; object-fit: cover; border-radius: 4px; margin-bottom: 0.4em; border: 1px solid #222; }\n        .gif-text { color: #ccc; font-size: 0.8em; line-height: 1.4; font-weight: 400; }\n        .gif-title { color: ${theme.accent}; font-weight: 700; font-size: 0.9em; margin-bottom: 0.3em; display: block; border-bottom: 1px solid #333; padding-bottom: 0.3em; }\n        \n        .control-item { display: flex; align-items: center; margin-bottom: 0.6em; cursor: pointer; transition: opacity 0.2s; }\n        .control-item:hover { opacity: 0.9; }\n        .checkbox-custom {\n            width: 1.1em; height: 1.1em; background: #121212; border: 1px solid #3a3a3a; \n            margin-right: 0.6em; border-radius: 4px; flex-shrink: 0; display: flex; justify-content: center; align-items: center; transition: all 0.2s;\n        }\n        .checkmark-svg { width: 0.7em; height: 0.7em; fill: none; stroke: #fff; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; transform: scale(0); transition: transform 0.2s cubic-bezier(0.4, 0.0, 0.2, 1); }\n        .control-item.active .checkbox-custom { background: ${theme.accent}; border-color: ${theme.accent}; box-shadow: 0 0 10px ${theme.accentGlow}; }\n        .control-item.active .checkmark-svg { transform: scale(1); }\n        .control-item span { font-weight: 500; font-size: 1em; }\n        \n        .slider-wrapper { margin-bottom: 1.25em; width: 100%; position: relative; }\n        .custom-range {\n            font-size:0.8em; -webkit-appearance: none; width: 100%; height: 0.8em; background: transparent; outline: none; display: block; cursor: pointer; margin: 0; padding: 0;\n            background-image: linear-gradient(#2a2a2a, #2a2a2a); background-size: 100% 6px; background-position: center; background-repeat: no-repeat;\n        }\n        .custom-range::-webkit-slider-thumb {\n            -webkit-appearance: none; appearance: none; width: 0.9em; height: 0.9em; \n            background: ${theme.accent}; cursor: pointer; border-radius: 50%; box-shadow: 0 0 8px ${theme.accentGlow}; \n            border: 2px solid #fff; margin-top: 0; transition: transform 0.1s;\n        }\n        .custom-range::-webkit-slider-thumb:hover { transform: scale(1.1); }\n        .slider-val-bubble {\n            position: absolute; bottom: 1.1em; left: 0; background: ${theme.accent}; color: #fff; \n            padding: 0.1em 0.4em; border-radius: 4px; font-size: 0.9em; font-weight: 600; \n            pointer-events: none; text-align: center; min-width: 2em; transform: translateX(-50%); opacity: 0; transition: opacity 0.2s; \n            box-shadow: 0 2px 5px rgba(0,0,0,0.5); z-index: 10;\n        }\n        .slider-wrapper:hover .slider-val-bubble, .custom-range:active + .slider-val-bubble { opacity: 1; }\n        .slider-val-bubble::after { content: ""; position: absolute; top: 100%; left: 50%; margin-left: -4px; border-width: 4px; border-style: solid; border-color: ${theme.accent} transparent transparent transparent; }\n        \n        .input-wrapper, .dropdown-wrapper { margin-bottom: 1em; width: 100%; }\n        .label-row { display: flex; align-items: center; margin-bottom: 0.3em; }\n        .input-label { font-size: 1em; color: ${theme.textMain}; margin: 0; font-weight: 500;}\n        .custom-input, .custom-select { \n            width: 100%; background: #121212; border: 1px solid #3a3a3a; color: ${theme.textMain}; \n            padding: 0.5em 0.6em; border-radius: 4px; font-family: ${theme.fontFamily}; font-size: 0.9em; \n            transition: border 0.2s, box-shadow 0.2s; \n        }\n        .custom-input:focus, .custom-select:focus { border-color: ${theme.accent}; box-shadow: 0 0 0 1px ${theme.accentGlow}; }\n        .custom-select { appearance: none; background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%232860b0%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E"); background-repeat: no-repeat; background-position: right 0.5em center; background-size: 0.9em; padding-right: 1.8em; cursor: pointer; }\n        \n        .keybind-wrapper { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6em; }\n        .keybind-btn { background: #121212; border: 1px solid #3a3a3a; color: ${theme.textDim}; padding: 0.3em 0.6em; border-radius: 4px; font-size: 0.8em; font-weight: 600; min-width: 4em; text-align: center; cursor: pointer; transition: all 0.2s; }\n        .keybind-btn:hover { border-color: ${theme.accent}; color: #fff; }\n        /* Style for recording state */\n        .keybind-btn.recording { border-color: #ffcc00; color: #ffcc00; animation: pulse 1s infinite; }\n        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }\n\n        .custom-btn { \n            width: 100%; background: linear-gradient(to bottom, #252525, #1f1f1f); border: 1px solid #3a3a3a; color: ${theme.textMain}; \n            padding: 0.6em 0; border-radius: 4px; font-family: ${theme.fontFamily}; font-weight: 600; font-size: 0.9em; \n            margin-bottom: 0.8em; cursor: pointer; transition: all 0.2s; \n        }\n        .custom-btn:hover { border-color: ${theme.accent}; color: #fff; background: ${theme.accent}; }\n        \n        .resize-handle { position: absolute; bottom: 0; right: 0; width: 22px; height: 22px; cursor: nwse-resize; z-index: 100001; border-bottom: 4px solid ${theme.accent}; border-right: 4px solid ${theme.accent}; border-top: 16px solid transparent; border-left: 16px solid transparent; }\n        .menu-content::-webkit-scrollbar { width: 6px; }\n        .menu-content::-webkit-scrollbar-track { background: transparent; }\n        .menu-content::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }\n        .menu-content::-webkit-scrollbar-thumb:hover { background: ${theme.accent}; }\n    `, document.head.appendChild(style);
 const menu = document.createElement("div");
-menu.id = "compact-menu", menu.innerHTML = '\n        <div class="menu-header" id="menu-drag-area">\n            <div class="menu-title">Nodus Re (Xmre)</div>\n            <div class="tabs-scroll-area" id="tabs-container">\n                <button class="tab-btn active" data-tab="visuals">Visuals</button>\n                <button class="tab-btn" data-tab="misc">Misc</button>\n                <button class="tab-btn" data-tab="binds">Binds</button>\n                <button class="tab-btn" data-tab="autofarm">AutoFarm</button>\n                <button class="tab-btn" data-tab="pathfinder">PathFinder</button>\n                <button class="tab-btn" data-tab="autosteal">AutoSteal</button>\n                <button class="tab-btn" data-tab="autospike">AutoSpike</button>\n                <button class="tab-btn" data-tab="autocraft">AutoCraft&Recycle</button>\n                <button class="tab-btn" data-tab="token">Token</button>\n            </div>\n        </div>\n        <div class="menu-content" id="menu-content-area"></div>\n        <div class="resize-handle" id="menu-resize"></div>\n    ', document.body.appendChild(menu);
+menu.id = "compact-menu", menu.innerHTML = '\n        <div class="menu-header" id="menu-drag-area">\n            <div class="menu-title">1 Re (Xmre)</div>\n            <div class="tabs-scroll-area" id="tabs-container">\n                <button class="tab-btn active" data-tab="visuals">Visuals</button>\n                <button class="tab-btn" data-tab="misc">Misc</button>\n                <button class="tab-btn" data-tab="binds">Binds</button>\n                <button class="tab-btn" data-tab="autofarm">AutoFarm</button>\n                <button class="tab-btn" data-tab="pathfinder">PathFinder</button>\n                <button class="tab-btn" data-tab="autosteal">AutoSteal</button>\n                <button class="tab-btn" data-tab="autospike">AutoSpike</button>\n                <button class="tab-btn" data-tab="autocraft">AutoCraft&Recycle</button>\n                <button class="tab-btn" data-tab="token">Token</button>\n            </div>\n        </div>\n        <div class="menu-content" id="menu-content-area"></div>\n        <div class="resize-handle" id="menu-resize"></div>\n    ', document.body.appendChild(menu);
 const tooltipContainer = document.createElement("div");
 tooltipContainer.id = "global-gif-tooltip", tooltipContainer.innerHTML = '<span class="gif-title">Feature Name</span><img class="gif-image" src="" alt="preview"><div class="gif-text">Description goes here.</div>', document.body.appendChild(tooltipContainer);
 let currentBindButton = null,
@@ -81123,26 +81123,33 @@ function oo‌(ⲟоο‌‌) {
 		// Sandworm Tracers
 		if (Settings.SandwormTracers) {
 			const myPlayer = ο‍.oоⲟ[օ‌.id * ο‍.oօoⲟ‍];
-			if (myPlayer && ο‍.օᴏ && ο‍.օᴏ[83]) {
-				for (let e = 0; e < ο‍.օᴏ[83].length; e++) {
-					let worm = ο‍.օᴏ[83][e];
-					if (worm && worm.x !== undefined) {
-						οⲟ.save();
-						οⲟ.beginPath();
-						οⲟ.lineWidth = 3;
-						οⲟ.moveTo(օ‌.ᴏᴏ‌.x + myPlayer.x, օ‌.ᴏᴏ‌.y + myPlayer.y);
-						οⲟ.lineTo(օ‌.ᴏᴏ‌.x + worm.x, օ‌.ᴏᴏ‌.y + worm.y);
-						οⲟ.strokeStyle = "#FF6600";
-						οⲟ.stroke();
-						// Draw label
-						οⲟ.font = "14px Baloo Paaji";
-						οⲟ.fillStyle = "#FF6600";
-						οⲟ.strokeStyle = "black";
-						οⲟ.lineWidth = 3;
-						let dist = Math.round(Math.sqrt((myPlayer.x - worm.x) ** 2 + (myPlayer.y - worm.y) ** 2));
-						οⲟ.strokeText("Sandworm [" + dist + "]", օ‌.ᴏᴏ‌.x + worm.x - 40, օ‌.ᴏᴏ‌.y + worm.y - 50);
-						οⲟ.fillText("Sandworm [" + dist + "]", օ‌.ᴏᴏ‌.x + worm.x - 40, օ‌.ᴏᴏ‌.y + worm.y - 50);
-						οⲟ.restore()
+			if (myPlayer && ο‍.օᴏ) {
+				// Check multiple possible entity type indices for sandworms
+				// In louxv3 sandworm was type 42 (o$w), may be different here
+				for (let typeId of [42, 83, 80, 81, 82]) {
+					if (ο‍.օᴏ[typeId]) {
+						for (let e = 0; e < ο‍.օᴏ[typeId].length; e++) {
+							let entity = ο‍.օᴏ[typeId][e];
+							// Check if this looks like a sandworm (large creature in desert)
+							if (entity && entity.x !== undefined) {
+								οⲟ.save();
+								οⲟ.beginPath();
+								οⲟ.lineWidth = 3;
+								οⲟ.moveTo(օ‌.ᴏᴏ‌.x + myPlayer.x, օ‌.ᴏᴏ‌.y + myPlayer.y);
+								οⲟ.lineTo(օ‌.ᴏᴏ‌.x + entity.x, օ‌.ᴏᴏ‌.y + entity.y);
+								οⲟ.strokeStyle = "#FF6600";
+								οⲟ.stroke();
+								// Draw label
+								οⲟ.font = "14px Baloo Paaji";
+								οⲟ.fillStyle = "#FF6600";
+								οⲟ.strokeStyle = "black";
+								οⲟ.lineWidth = 3;
+								let dist = Math.round(Math.sqrt((myPlayer.x - entity.x) ** 2 + (myPlayer.y - entity.y) ** 2));
+								οⲟ.strokeText("Sandworm [" + dist + "]", օ‌.ᴏᴏ‌.x + entity.x - 40, օ‌.ᴏᴏ‌.y + entity.y - 50);
+								οⲟ.fillText("Sandworm [" + dist + "]", օ‌.ᴏᴏ‌.x + entity.x - 40, օ‌.ᴏᴏ‌.y + entity.y - 50);
+								οⲟ.restore()
+							}
+						}
 					}
 				}
 			}
@@ -81150,26 +81157,31 @@ function oo‌(ⲟоο‌‌) {
 		// Kraken Tracers
 		if (Settings.KrakenTracers) {
 			const myPlayer = ο‍.oоⲟ[օ‌.id * ο‍.oօoⲟ‍];
-			if (myPlayer && ο‍.օᴏ && ο‍.օᴏ[84]) {
-				for (let e = 0; e < ο‍.օᴏ[84].length; e++) {
-					let kraken = ο‍.օᴏ[84][e];
-					if (kraken && kraken.x !== undefined) {
-						οⲟ.save();
-						οⲟ.beginPath();
-						οⲟ.lineWidth = 3;
-						οⲟ.moveTo(օ‌.ᴏᴏ‌.x + myPlayer.x, օ‌.ᴏᴏ‌.y + myPlayer.y);
-						οⲟ.lineTo(օ‌.ᴏᴏ‌.x + kraken.x, օ‌.ᴏᴏ‌.y + kraken.y);
-						οⲟ.strokeStyle = "#00FFFF";
-						οⲟ.stroke();
-						// Draw label
-						οⲟ.font = "14px Baloo Paaji";
-						οⲟ.fillStyle = "#00FFFF";
-						οⲟ.strokeStyle = "black";
-						οⲟ.lineWidth = 3;
-						let dist = Math.round(Math.sqrt((myPlayer.x - kraken.x) ** 2 + (myPlayer.y - kraken.y) ** 2));
-						οⲟ.strokeText("Kraken [" + dist + "]", օ‌.ᴏᴏ‌.x + kraken.x - 30, օ‌.ᴏᴏ‌.y + kraken.y - 50);
-						οⲟ.fillText("Kraken [" + dist + "]", օ‌.ᴏᴏ‌.x + kraken.x - 30, օ‌.ᴏᴏ‌.y + kraken.y - 50);
-						οⲟ.restore()
+			if (myPlayer && ο‍.օᴏ) {
+				// Check multiple possible entity type indices for krakens
+				for (let typeId of [84, 85, 86, 87, 88]) {
+					if (ο‍.օᴏ[typeId]) {
+						for (let e = 0; e < ο‍.օᴏ[typeId].length; e++) {
+							let entity = ο‍.օᴏ[typeId][e];
+							if (entity && entity.x !== undefined) {
+								οⲟ.save();
+								οⲟ.beginPath();
+								οⲟ.lineWidth = 3;
+								οⲟ.moveTo(օ‌.ᴏᴏ‌.x + myPlayer.x, օ‌.ᴏᴏ‌.y + myPlayer.y);
+								οⲟ.lineTo(օ‌.ᴏᴏ‌.x + entity.x, օ‌.ᴏᴏ‌.y + entity.y);
+								οⲟ.strokeStyle = "#00FFFF";
+								οⲟ.stroke();
+								// Draw label
+								οⲟ.font = "14px Baloo Paaji";
+								οⲟ.fillStyle = "#00FFFF";
+								οⲟ.strokeStyle = "black";
+								οⲟ.lineWidth = 3;
+								let dist = Math.round(Math.sqrt((myPlayer.x - entity.x) ** 2 + (myPlayer.y - entity.y) ** 2));
+								οⲟ.strokeText("Kraken [" + dist + "]", օ‌.ᴏᴏ‌.x + entity.x - 30, օ‌.ᴏᴏ‌.y + entity.y - 50);
+								οⲟ.fillText("Kraken [" + dist + "]", օ‌.ᴏᴏ‌.x + entity.x - 30, օ‌.ᴏᴏ‌.y + entity.y - 50);
+								οⲟ.restore()
+							}
+						}
 					}
 				}
 			}
@@ -81178,65 +81190,123 @@ function oo‌(ⲟоο‌‌) {
 		if (Settings.Esp) {
 			const myPlayer = ο‍.oоⲟ[օ‌.id * ο‍.oօoⲟ‍];
 			if (myPlayer) {
-				for (let i = 0; i < ο‍.oоⲟ.length; i++) {
-					let player = ο‍.oоⲟ[i];
-					if (player && player.id !== օ‌.id && player.x !== undefined) {
-						οⲟ.save();
-						let screenX = օ‌.ᴏᴏ‌.x + player.x;
-						let screenY = օ‌.ᴏᴏ‌.y + player.y;
-						let dist = Math.round(Math.sqrt((myPlayer.x - player.x) ** 2 + (myPlayer.y - player.y) ** 2));
-						
-						// Draw box around player
-						οⲟ.strokeStyle = checkAlly(player.ⲟᴑⲟ) ? "#00FF00" : "#FF0000";
-						οⲟ.lineWidth = 2;
-						οⲟ.strokeRect(screenX - 25, screenY - 35, 50, 70);
-						
-						// Draw info text
-						οⲟ.font = "12px Baloo Paaji";
-						οⲟ.fillStyle = "#FFFFFF";
-						οⲟ.strokeStyle = "black";
-						οⲟ.lineWidth = 3;
-						οⲟ.textAlign = "center";
-						
-						// Distance
-						οⲟ.strokeText("[" + dist + "]", screenX, screenY - 45);
-						οⲟ.fillText("[" + dist + "]", screenX, screenY - 45);
-						
-						// Health bar if visible
-						if (player.οο‍ !== undefined) {
-							let healthWidth = 40;
-							let healthHeight = 5;
-							let healthPercent = player.οο‍;
-							οⲟ.fillStyle = "#333";
-							οⲟ.fillRect(screenX - healthWidth/2, screenY + 40, healthWidth, healthHeight);
-							οⲟ.fillStyle = healthPercent > 0.5 ? "#00FF00" : healthPercent > 0.25 ? "#FFFF00" : "#FF0000";
-							οⲟ.fillRect(screenX - healthWidth/2, screenY + 40, healthWidth * healthPercent, healthHeight);
+				// Iterate through player info array to find all active players
+				for (let i = 0; i < ο‍.ᴏօо.length; i++) {
+					// Check if this player is active and not us
+					if (ο‍.ᴏօо[i] && ο‍.ᴏօо[i].oоⲟοο && i !== օ‌.id) {
+						// Get position data from sparse array
+						let player = ο‍.oоⲟ[i * ο‍.oօoⲟ‍];
+						if (player && player.x !== undefined) {
+							οⲟ.save();
+							let screenX = օ‌.ᴏᴏ‌.x + player.x;
+							let screenY = օ‌.ᴏᴏ‌.y + player.y;
+							let dist = Math.round(Math.sqrt((myPlayer.x - player.x) ** 2 + (myPlayer.y - player.y) ** 2));
+							
+							// Check if ally
+							let isAlly = checkAlly(i);
+							
+							// Draw box around player
+							οⲟ.strokeStyle = isAlly ? "#00FF00" : "#FF0000";
+							οⲟ.lineWidth = 2;
+							οⲟ.strokeRect(screenX - 25, screenY - 35, 50, 70);
+							
+							// Draw info text
+							οⲟ.font = "12px Baloo Paaji";
+							οⲟ.fillStyle = "#FFFFFF";
+							οⲟ.strokeStyle = "black";
+							οⲟ.lineWidth = 3;
+							οⲟ.textAlign = "center";
+							
+							// Player name
+							if (ο‍.ᴏօо[i].ᴏоⲟ) {
+								οⲟ.strokeText(ο‍.ᴏօо[i].ᴏоⲟ, screenX, screenY - 55);
+								οⲟ.fillText(ο‍.ᴏօо[i].ᴏоⲟ, screenX, screenY - 55);
+							}
+							
+							// Distance
+							οⲟ.strokeText("[" + dist + "]", screenX, screenY - 45);
+							οⲟ.fillText("[" + dist + "]", screenX, screenY - 45);
+							
+							// Health bar if visible
+							if (player.οο‍ !== undefined) {
+								let healthWidth = 40;
+								let healthHeight = 5;
+								let healthPercent = player.οο‍;
+								οⲟ.fillStyle = "#333";
+								οⲟ.fillRect(screenX - healthWidth/2, screenY + 40, healthWidth, healthHeight);
+								οⲟ.fillStyle = healthPercent > 0.5 ? "#00FF00" : healthPercent > 0.25 ? "#FFFF00" : "#FF0000";
+								οⲟ.fillRect(screenX - healthWidth/2, screenY + 40, healthWidth * healthPercent, healthHeight);
+							}
+							
+							οⲟ.restore()
 						}
-						
-						οⲟ.restore()
 					}
 				}
 			}
 		}
 		// Locked Chests Indicator
 		if (Settings.LockedChests) {
-			if (ο‍.օᴏ && ο‍.օᴏ[38]) {
-				for (let e = 0; e < ο‍.օᴏ[38].length; e++) {
-					let chest = ο‍.օᴏ[38][e];
-					if (chest && chest.lock && chest.x !== undefined) {
-						οⲟ.save();
-						let screenX = օ‌.ᴏᴏ‌.x + chest.x;
-						let screenY = օ‌.ᴏᴏ‌.y + chest.y;
-						
-						// Draw lock icon
-						οⲟ.font = "16px Baloo Paaji";
-						οⲟ.fillStyle = "#FFD700";
-						οⲟ.strokeStyle = "black";
-						οⲟ.lineWidth = 3;
-						οⲟ.textAlign = "center";
-						οⲟ.strokeText("🔒", screenX, screenY - 40);
-						οⲟ.fillText("🔒", screenX, screenY - 40);
-						οⲟ.restore()
+			// Check multiple possible chest type indices
+			for (let typeId of [37, 38, 39, 40]) {
+				if (ο‍.օᴏ && ο‍.օᴏ[typeId]) {
+					for (let e = 0; e < ο‍.օᴏ[typeId].length; e++) {
+						let chest = ο‍.օᴏ[typeId][e];
+						if (chest && chest.lock && chest.x !== undefined) {
+							οⲟ.save();
+							let screenX = օ‌.ᴏᴏ‌.x + chest.x;
+							let screenY = օ‌.ᴏᴏ‌.y + chest.y;
+							
+							// Draw lock icon
+							οⲟ.font = "16px Baloo Paaji";
+							οⲟ.fillStyle = "#FFD700";
+							οⲟ.strokeStyle = "black";
+							οⲟ.lineWidth = 3;
+							οⲟ.textAlign = "center";
+							οⲟ.strokeText("🔒", screenX, screenY - 40);
+							οⲟ.fillText("🔒", screenX, screenY - 40);
+							οⲟ.restore()
+						}
+					}
+				}
+			}
+		}
+		// BuildingInfo - Show owner and ID of buildings
+		if (Settings.buildingInfo) {
+			// Building types: chests (38), extractors (24-28 or similar)
+			for (let typeId = 20; typeId < 60; typeId++) {
+				if (ο‍.օᴏ && ο‍.օᴏ[typeId]) {
+					for (let e = 0; e < ο‍.օᴏ[typeId].length; e++) {
+						let building = ο‍.օᴏ[typeId][e];
+						if (building && building.x !== undefined && building.ⲟᴑⲟ !== undefined) {
+							οⲟ.save();
+							let screenX = օ‌.ᴏᴏ‌.x + building.x;
+							let screenY = օ‌.ᴏᴏ‌.y + building.y;
+							
+							// Get owner name
+							let ownerName = "Unknown";
+							let ownerId = building.ⲟᴑⲟ;
+							if (ο‍.ᴏօо && ο‍.ᴏօо[ownerId] && ο‍.ᴏօо[ownerId].ᴏоⲟ) {
+								ownerName = ο‍.ᴏօо[ownerId].ᴏоⲟ;
+							}
+							
+							// Draw owner info
+							οⲟ.font = "11px Baloo Paaji";
+							οⲟ.fillStyle = "#FFFFFF";
+							οⲟ.strokeStyle = "black";
+							οⲟ.lineWidth = 3;
+							οⲟ.textAlign = "center";
+							
+							// Draw building contents if available
+							if (building.img && building.img.canvas) {
+								οⲟ.drawImage(building.img.canvas, screenX - 30, screenY - 50);
+							}
+							
+							// Draw owner name
+							οⲟ.strokeText(ownerName + " [" + ownerId + "]", screenX, screenY - 55);
+							οⲟ.fillText(ownerName + " [" + ownerId + "]", screenX, screenY - 55);
+							
+							οⲟ.restore()
+						}
 					}
 				}
 			}
@@ -82128,10 +82198,19 @@ function normalizeAngle(angle) {
 
 function getPlayers() {
 	let players = [];
-	for (let i = 0; i < ο‍.oоⲟ.length; i++) {
-		let p = ο‍.oоⲟ[i];
-		if (p && p.id !== օ‌.id && p.x !== undefined && p.y !== undefined) {
-			players.push(p);
+	// Player data is stored at playerId * multiplier in sparse array
+	// Iterate through player info array (ο‍.ᴏօо) which has sequential indices
+	if (ο‍.ᴏօо) {
+		for (let i = 0; i < ο‍.ᴏօо.length; i++) {
+			if (ο‍.ᴏօо[i] && ο‍.ᴏօо[i].oоⲟοο && i !== օ‌.id) {
+				// Get position data from sparse array
+				let posData = ο‍.oоⲟ[i * ο‍.oօoⲟ‍];
+				if (posData && posData.x !== undefined && posData.y !== undefined) {
+					posData.playerId = i;
+					posData.playerInfo = ο‍.ᴏօо[i];
+					players.push(posData);
+				}
+			}
 		}
 	}
 	return players;
@@ -82168,7 +82247,8 @@ function getNearestPlayer(myPlayer) {
 	let nearest = null;
 	let minDist = Infinity;
 	for (let p of players) {
-		if (!checkAlly(p.ⲟᴑⲟ)) {
+		// Check ally using playerId we attached in getPlayers()
+		if (!checkAlly(p.playerId)) {
 			let d = dist2d(myPlayer, p);
 			if (d < minDist) {
 				minDist = d;
@@ -82181,11 +82261,20 @@ function getNearestPlayer(myPlayer) {
 
 function getChests() {
 	let chests = [];
-	if (ο‍.օᴏ && ο‍.օᴏ[38]) {
-		for (let i = 0; i < ο‍.օᴏ[38].length; i++) {
-			let c = ο‍.օᴏ[38][i];
-			if (c && c.x !== undefined && c.y !== undefined) {
-				chests.push(c);
+	// Iterate through all entity types to find chests
+	// Chests have lock property and can contain items
+	if (ο‍.օᴏ) {
+		for (let typeId = 20; typeId < 60; typeId++) {
+			if (ο‍.օᴏ[typeId]) {
+				for (let i = 0; i < ο‍.օᴏ[typeId].length; i++) {
+					let c = ο‍.օᴏ[typeId][i];
+					if (c && c.x !== undefined && c.y !== undefined) {
+						// Check if it looks like a chest (has lock property or is storage type)
+						if (c.lock !== undefined || (c.img && c.img.canvas)) {
+							chests.push(c);
+						}
+					}
+				}
 			}
 		}
 	}
@@ -82194,12 +82283,16 @@ function getChests() {
 
 function getExtractors() {
 	let extractors = [];
-	for (let typeId = 46; typeId <= 60; typeId++) {
-		if (ο‍.օᴏ && ο‍.օᴏ[typeId]) {
-			for (let i = 0; i < ο‍.օᴏ[typeId].length; i++) {
-				let e = ο‍.օᴏ[typeId][i];
-				if (e && e.x !== undefined && e.y !== undefined) {
-					extractors.push(e);
+	// Extractors convert resources - look for them in building types
+	if (ο‍.օᴏ) {
+		for (let typeId = 40; typeId < 70; typeId++) {
+			if (ο‍.օᴏ[typeId]) {
+				for (let i = 0; i < ο‍.օᴏ[typeId].length; i++) {
+					let e = ο‍.օᴏ[typeId][i];
+					if (e && e.x !== undefined && e.y !== undefined && e.ⲟᴑⲟ !== undefined) {
+						// Extractors have owner and info properties
+						extractors.push(e);
+					}
 				}
 			}
 		}
@@ -82209,11 +82302,16 @@ function getExtractors() {
 
 function getBreadOvens() {
 	let ovens = [];
-	if (ο‍.օᴏ && ο‍.օᴏ[44]) {
-		for (let i = 0; i < ο‍.օᴏ[44].length; i++) {
-			let o = ο‍.օᴏ[44][i];
-			if (o && o.x !== undefined && o.y !== undefined) {
-				ovens.push(o);
+	// Ovens process wheat/flour
+	if (ο‍.օᴏ) {
+		for (let typeId = 40; typeId < 60; typeId++) {
+			if (ο‍.օᴏ[typeId]) {
+				for (let i = 0; i < ο‍.օᴏ[typeId].length; i++) {
+					let o = ο‍.օᴏ[typeId][i];
+					if (o && o.x !== undefined && o.y !== undefined && o.ⲟᴑⲟ !== undefined) {
+						ovens.push(o);
+					}
+				}
 			}
 		}
 	}
@@ -82222,13 +82320,18 @@ function getBreadOvens() {
 
 function getAnimals() {
 	let animals = [];
-	// Wolves (72) and Spiders (73) for taming
-	for (let typeId of [72, 73]) {
-		if (ο‍.օᴏ && ο‍.օᴏ[typeId]) {
-			for (let i = 0; i < ο‍.օᴏ[typeId].length; i++) {
-				let a = ο‍.օᴏ[typeId][i];
-				if (a && a.x !== undefined && a.y !== undefined && !a.info) {
-					animals.push(a);
+	// Animals for taming (wolves, spiders, etc.) - check creature types
+	if (ο‍.օᴏ) {
+		for (let typeId = 70; typeId < 100; typeId++) {
+			if (ο‍.օᴏ[typeId]) {
+				for (let i = 0; i < ο‍.օᴏ[typeId].length; i++) {
+					let a = ο‍.օᴏ[typeId][i];
+					if (a && a.x !== undefined && a.y !== undefined) {
+						// Tameable animals don't have owner yet
+						if (!a.ⲟᴑⲟ || a.ⲟᴑⲟ === 0) {
+							animals.push(a);
+						}
+					}
 				}
 			}
 		}
@@ -82238,11 +82341,16 @@ function getAnimals() {
 
 function getSandworms() {
 	let worms = [];
-	if (ο‍.օᴏ && ο‍.օᴏ[83]) {
-		for (let i = 0; i < ο‍.օᴏ[83].length; i++) {
-			let w = ο‍.օᴏ[83][i];
-			if (w && w.x !== undefined && w.y !== undefined) {
-				worms.push(w);
+	// Sandworms are large creatures in desert
+	if (ο‍.օᴏ) {
+		for (let typeId of [41, 42, 80, 81, 82, 83]) {
+			if (ο‍.օᴏ[typeId]) {
+				for (let i = 0; i < ο‍.օᴏ[typeId].length; i++) {
+					let w = ο‍.օᴏ[typeId][i];
+					if (w && w.x !== undefined && w.y !== undefined) {
+						worms.push(w);
+					}
+				}
 			}
 		}
 	}
@@ -82251,11 +82359,16 @@ function getSandworms() {
 
 function getKrakens() {
 	let krakens = [];
-	if (ο‍.օᴏ && ο‍.օᴏ[84]) {
-		for (let i = 0; i < ο‍.օᴏ[84].length; i++) {
-			let k = ο‍.օᴏ[84][i];
-			if (k && k.x !== undefined && k.y !== undefined) {
-				krakens.push(k);
+	// Krakens are large sea creatures
+	if (ο‍.օᴏ) {
+		for (let typeId of [84, 85, 86, 87, 88]) {
+			if (ο‍.օᴏ[typeId]) {
+				for (let i = 0; i < ο‍.օᴏ[typeId].length; i++) {
+					let k = ο‍.օᴏ[typeId][i];
+					if (k && k.x !== undefined && k.y !== undefined) {
+						krakens.push(k);
+					}
+				}
 			}
 		}
 	}
@@ -82322,6 +82435,7 @@ let lastAutoTameTime = 0;
 let lastAimbotTime = 0;
 let autoFarmState = 0; // 0 = idle, 1 = farming, 2 = returning
 let pathFinderState = 0;
+let AutoRespawnInterval = null;
 
 function LouxLoop() {
 	let socket = օoо.ⲟⲟⲟ;
@@ -82330,10 +82444,26 @@ function LouxLoop() {
 	
 	// AutoRespawn when dead
 	if (!myPlayer) {
-		if (Settings.AutoRespawn) {
-			socket.send(JSON.stringify([29]));
+		if (Settings.AutoRespawn && !AutoRespawnInterval) {
+			// Close socket and try to respawn using play function
+			try {
+				socket.close();
+				օօ.οoⲟо‍(); // Call the play function
+				AutoRespawnInterval = setInterval(() => {
+					// If socket not ready, try again
+					if (օoо.ⲟⲟⲟ && (օoо.ⲟⲟⲟ.readyState !== 0 && օoо.ⲟⲟⲟ.readyState !== 1)) {
+						օօ.οoⲟо‍();
+					}
+				}, 3000);
+			} catch (e) {
+				console.log("AutoRespawn error:", e);
+			}
 		}
 		return;
+	} else if (AutoRespawnInterval) {
+		// Clear interval when alive
+		clearInterval(AutoRespawnInterval);
+		AutoRespawnInterval = null;
 	}
 	
 	let myX = myPlayer.x;
@@ -82588,18 +82718,30 @@ function LouxLoop() {
 				// Find nearest farmable object
 				let target = null;
 				let minDist = Infinity;
+				let targetType = 0; // 1 = wheat/plant, 2 = stone/gold
 				
-				// Check trees, stones, gold, etc in farm area
-				for (let typeId of [16, 17, 18, 19, 1, 2, 3]) { // resource types
-					if (ο‍.օᴏ && ο‍.օᴏ[typeId]) {
-						for (let res of ο‍.օᴏ[typeId]) {
-							if (res && res.x >= farmArea.x && res.x <= farmArea.x + farmArea.width &&
-								res.y >= farmArea.y && res.y <= farmArea.y + farmArea.height) {
-								if (res.info && res.info !== 10) { // has resources
-									let d = dist2d(myPlayer, res);
-									if (d < minDist) {
-										minDist = d;
-										target = res;
+				// Iterate through all entity types and find farmable resources
+				// Resource types have info property with values 1-19 for amount remaining
+				// Entity type indices for farmable objects: 1, 2, 3, 31, 37, 39, 40, 43, 44
+				// But since xmree has different indices, iterate through all entity arrays
+				if (ο‍.օᴏ) {
+					for (let typeId = 0; typeId < 100; typeId++) {
+						if (ο‍.օᴏ[typeId]) {
+							for (let res of ο‍.օᴏ[typeId]) {
+								if (res && res.x !== undefined && res.info !== undefined) {
+									// Check if in farm area
+									if (res.x >= farmArea.x && res.x <= farmArea.x + farmArea.width &&
+										res.y >= farmArea.y && res.y <= farmArea.y + farmArea.height) {
+										// Check if has resources (info 1-19 = amount, 10 = empty for some)
+										if (res.info && res.info > 0 && res.info <= 19 && res.info !== 10) {
+											let d = dist2d(myPlayer, res);
+											if (d < minDist) {
+												minDist = d;
+												target = res;
+												// Wheat/plants have info 16-19, others have 1-3
+												targetType = (res.info >= 16) ? 1 : 2;
+											}
+										}
 									}
 								}
 							}
@@ -82612,9 +82754,18 @@ function LouxLoop() {
 					if (minDist > 100) {
 						moveTowards(socket, target.x, target.y, myX, myY);
 					} else {
-						// Equip best tool
-						if (hasItem(54)) equipItem(socket, 54); // diamond pickaxe
-						else if (hasItem(53)) equipItem(socket, 53); // gold pickaxe
+						// Equip best tool based on target type
+						if (targetType === 1) {
+							// Wheat - use pitchfork
+							if (hasItem(98)) equipItem(socket, 98); // pitchfork
+							else if (hasItem(99)) equipItem(socket, 99); // golden pitchfork
+						} else {
+							// Stone/gold - use pickaxe
+							if (hasItem(55)) equipItem(socket, 55); // reidite pickaxe
+							else if (hasItem(54)) equipItem(socket, 54); // diamond pickaxe
+							else if (hasItem(53)) equipItem(socket, 53); // gold pickaxe
+							else if (hasItem(52)) equipItem(socket, 52); // stone pickaxe
+						}
 						
 						// Attack
 						let farmAngle = calcAngle(myPlayer, target);
