@@ -20,6 +20,48 @@ function sendPacketSafe(socket, packetData) {
 const units = [0, 84, 89, 77, 78, 74, 90, 75, 105, 106, 92],
 	foods = [201, 294, 298, 291, 317, 315, 319, 236, 208, 231, 226, 238, 229, 299];
 
+// Aimbot helper functions
+function HoldWeapon(weaponId, returnType) {
+	switch (weaponId) {
+		case 34: case 18: case 33: case 15: case 14: case 13: case 12: case 16: case 17:
+			return 2; // Bow
+		case 57: case 5: case 6: case 30: case 62: case 9: case 0: case 63: case 19:
+			return 1; // Sword
+		case 64: case 65: case 66: case 67: case 68: case 70: case 69:
+			return 3; // Spear
+		case 45:
+			if (returnType) return 4; // Hammer
+		case -1:
+			if (returnType) return 5; // Fist
+	}
+	return 0;
+}
+
+function calcAngle(player, target) {
+	if (!player || !target) return null;
+	return Math.atan2(target.y - player.y, target.x - player.x);
+}
+
+function dist2dSQRT(a, b) {
+	return Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2);
+}
+
+function EnemyToAttack(player, enemies) {
+	let closest = null, minDist = -1;
+	const isBow = HoldWeapon(player.right, false) === 2;
+	for (let i = 0; i < enemies.length; i++) {
+		const e = enemies[i];
+		if (e.ⲟᴑⲟ === player.ⲟᴑⲟ || e.ally) continue; // Skip self and allies
+		const dist = (player.x - e.x) ** 2 + (player.y - e.y) ** 2;
+		if (isBow && dist < 330) continue; // Bow minimum range
+		if (minDist === -1 || dist < minDist) {
+			minDist = dist;
+			closest = e;
+		}
+	}
+	return closest;
+}
+
 function AutoFeed2(inv, gauges, socket) {
 	socket.send(JSON.stringify([15]));
 	let current;
@@ -112,77 +154,23 @@ window.Settings = {
 	showIncomingOutgoingItems: !0,
 	Zoom: !0,
 	Spectator: !1,
-	UltraZoom: !1,
 	buildLimit: !0,
 	craftTimer: !0,
 	showPlaceableRange: !0,
 	autosteal: !1,
 	AutoSpike: !1,
-	SandwormTracers: !1,
-	KrakenTracers: !1,
-	LockedChests: !0,
-	Esp: !1,
-	AutoBridge: !1,
-	EquipAfterPlace: !1,
-	AutoExtractorTake: !1,
-	AutoExtractorPut: !1,
-	AutoBreadTake: !1,
-	AutoBreadPut: !1,
-	AutoEmerald: !1,
-	AutoRespawn: !1,
-	AutoCrown: !1,
-	AutoBook: !0,
-	AutoTotem: !1,
-	AutoSeed: !1,
-	AutoIce: !1,
-	Aimbot: !1,
-	AutoTame: !1,
-	AutoCraft: !1,
-	AutoRecycle: !1,
-	PathFinder: !1,
-	PathFinderPutInv: !1,
-	AutoUnlock: !1,
-	AutoSpike2: !1,
-	AutoFarm: !1,
-	AutoFarmWater: !1
-}, window.drawOnEnabledCheatsList = {
+	Aimbot: !1
+}, window.AimbotAngle = null, window.drawOnEnabledCheatsList = {
 	Xray: !0,
 	autosteal: !0,
 	AutoSpike: !0,
 	Spectator: !0,
-	UltraZoom: !0,
-	Aimbot: !0,
-	AutoTame: !0,
-	AutoBridge: !0,
-	AutoEmerald: !0,
-	AutoCraft: !0,
-	AutoRecycle: !0,
-	PathFinder: !0,
-	AutoFarm: !0,
-	AutoTotem: !0
+	Aimbot: !0
 }, window.settingConfigs = {
 	Xray: .5,
 	vehicleXray: .5,
 	roofXray: .3,
-	spectatorSpeed: 5,
-	ultraZoomRange: 600,
-	PutInChestAmount: 10,
-	AutoStealItemID: 0,
-	AutoStealList: [],
-	lastCrafted: -1,
-	lastRecycled: -1,
-	PathFinderX: -1,
-	PathFinderY: -1,
-	PathFinderTargetX: -1,
-	PathFinderTargetY: -1,
-	AutoFarmX: null,
-	AutoFarmY: null,
-	AutoFarmX1: null,
-	AutoFarmY1: null,
-	AutoFarmSX: null,
-	AutoFarmSY: null,
-	EmeraldIndex: 0,
-	AutoSpikeList: ["Reidite Spike", "Amethyst Spike", "Diamond Spike", "Gold Spike", "Stone Spike", "Wood Spike", "Wood Wall"]
+	spectatorSpeed: 5
 }, window.inandout = [], window.keybindSettings = {
 	Xray: {
 		key: "Backquote",
@@ -190,10 +178,6 @@ window.Settings = {
 	},
 	Spectator: {
 		key: "KeyP",
-		hold: !1
-	},
-	UltraZoom: {
-		key: "KeyU",
 		hold: !1
 	},
 	AutoSpike: {
@@ -204,60 +188,8 @@ window.Settings = {
 		key: "KeyQ",
 		hold: !1
 	},
-	AutoExtractorTake: {
-		key: "NONE",
-		hold: !1
-	},
-	AutoExtractorPut: {
-		key: "NONE",
-		hold: !1
-	},
-	AutoBreadTake: {
-		key: "NONE",
-		hold: !1
-	},
-	AutoBreadPut: {
-		key: "NONE",
-		hold: !1
-	},
 	Aimbot: {
 		key: "KeyF",
-		hold: !1
-	},
-	AutoTame: {
-		key: "KeyJ",
-		hold: !1
-	},
-	AutoBridge: {
-		key: "KeyT",
-		hold: !1
-	},
-	PathFinder: {
-		key: "Numpad3",
-		hold: !1
-	},
-	AutoTotem: {
-		key: "KeyH",
-		hold: !1
-	},
-	AutoFarm: {
-		key: "Numpad1",
-		hold: !1
-	},
-	AutoEmerald: {
-		key: "Numpad2",
-		hold: !1
-	},
-	DropSword: {
-		key: "KeyV",
-		hold: !1
-	},
-	AutoCraft: {
-		key: "KeyK",
-		hold: !1
-	},
-	AutoRecycle: {
-		key: "KeyL",
 		hold: !1
 	}
 };
@@ -308,42 +240,6 @@ const features = {
 					info: {
 						gif: "https://via.placeholder.com/260x140/111/2860b0",
 						desc: "Draws a line from your player to entites."
-					}
-				}, {
-					type: "checkbox",
-					text: "Sandworm Tracers",
-					setting: "Settings",
-					property: "SandwormTracers",
-					info: {
-						gif: "https://via.placeholder.com/260x140/111/2860b0",
-						desc: "Draws tracers to sandworms."
-					}
-				}, {
-					type: "checkbox",
-					text: "Kraken Tracers",
-					setting: "Settings",
-					property: "KrakenTracers",
-					info: {
-						gif: "https://via.placeholder.com/260x140/111/2860b0",
-						desc: "Draws tracers to krakens."
-					}
-				}, {
-					type: "checkbox",
-					text: "Locked Chests",
-					setting: "Settings",
-					property: "LockedChests",
-					info: {
-						gif: "https://via.placeholder.com/260x140/111/2860b0",
-						desc: "Shows locked chest indicators."
-					}
-				}, {
-					type: "checkbox",
-					text: "ESP",
-					setting: "Settings",
-					property: "Esp",
-					info: {
-						gif: "https://via.placeholder.com/260x140/111/2860b0",
-						desc: "Shows extra information about players."
 					}
 				}, {
 					type: "checkbox",
@@ -561,15 +457,6 @@ const features = {
 						gif: "https://via.placeholder.com/260x140/111/2860b0",
 						desc: "You can see range when you about to place a item and know if its available."
 					}
-				}, {
-					type: "checkbox",
-					text: "Ultra Zoom",
-					setting: "Settings",
-					property: "UltraZoom",
-					info: {
-						gif: "https://via.placeholder.com/260x140/111/2860b0",
-						desc: "Loads entities in larger area by cycling camera through 4 corners. Takes 4 ticks per full scan."
-					}
 				}]
 			},
 			right: {
@@ -605,14 +492,6 @@ const features = {
 					min: 1,
 					max: 10,
 					step: 1
-				}, {
-					type: "slider",
-					label: "Ultra Zoom Range",
-					setting: "settingConfigs",
-					property: "ultraZoomRange",
-					min: 300,
-					max: 1500,
-					step: 100
 				}],
 				Keybinds: [{
 					type: "keybind",
@@ -622,386 +501,28 @@ const features = {
 					type: "keybind",
 					label: "Spectator Key",
 					property: "Spectator"
-				}, {
-					type: "keybind",
-					label: "Ultra Zoom Key",
-					property: "UltraZoom"
 				}]
 			}
 		},
 		misc: {
 			left: {
-				Automation: [{
-					type: "checkbox",
-					text: "AutoBridge with G mode",
-					setting: "Settings",
-					property: "AutoBridge"
-				}, {
-					type: "checkbox",
-					text: "Equip after place",
-					setting: "Settings",
-					property: "EquipAfterPlace"
-				}, {
-					type: "checkbox",
-					text: "AutoExtractor Take",
-					setting: "Settings",
-					property: "AutoExtractorTake"
-				}, {
-					type: "checkbox",
-					text: "AutoExtractor Put",
-					setting: "Settings",
-					property: "AutoExtractorPut"
-				}, {
-					type: "checkbox",
-					text: "AutoBread Take",
-					setting: "Settings",
-					property: "AutoBreadTake"
-				}, {
-					type: "checkbox",
-					text: "AutoBread Put",
-					setting: "Settings",
-					property: "AutoBreadPut"
-				}, {
-					type: "checkbox",
-					text: "AutoEmerald",
-					setting: "Settings",
-					property: "AutoEmerald"
-				}, {
-					type: "checkbox",
-					text: "AutoRespawn",
-					setting: "Settings",
-					property: "AutoRespawn"
-				}, {
-					type: "checkbox",
-					text: "AutoCrown",
-					setting: "Settings",
-					property: "AutoCrown"
-				}, {
-					type: "checkbox",
-					text: "Auto-Book",
-					setting: "Settings",
-					property: "AutoBook"
-				}, {
-					type: "checkbox",
-					text: "AutoTotem",
-					setting: "Settings",
-					property: "AutoTotem"
-				}, {
-					type: "checkbox",
-					text: "AutoSeed",
-					setting: "Settings",
-					property: "AutoSeed"
-				}, {
-					type: "checkbox",
-					text: "AutoIce",
-					setting: "Settings",
-					property: "AutoIce"
-				}]
-			},
-			right: {
-				Combat: [{
-					type: "checkbox",
-					text: "Aimbot",
-					setting: "Settings",
-					property: "Aimbot"
-				}, {
-					type: "checkbox",
-					text: "AutoTame",
-					setting: "Settings",
-					property: "AutoTame"
-				}],
-				Other: [{
-					type: "slider",
-					label: "Put in chest amount",
-					setting: "settingConfigs",
-					property: "PutInChestAmount",
-					min: 1,
-					max: 255,
-					step: 1
-				}]
-			}
-		},
-		binds: {
-			left: {
-				Keybinds: [{
+				PvP: [{
 					type: "keybind",
-					label: "AutoExtractor Put Key",
-					property: "AutoExtractorPut"
-				}, {
-					type: "keybind",
-					label: "AutoExtractor Take Key",
-					property: "AutoExtractorTake"
-				}, {
-					type: "keybind",
-					label: "AutoBread Take Key",
-					property: "AutoBreadTake"
-				}, {
-					type: "keybind",
-					label: "AutoBread Put Key",
-					property: "AutoBreadPut"
+					label: "Auto Spike Key",
+					property: "AutoSpike"
 				}, {
 					type: "keybind",
 					label: "Aimbot Key",
 					property: "Aimbot"
-				}, {
-					type: "keybind",
-					label: "AutoTame Key",
-					property: "AutoTame"
-				}, {
-					type: "keybind",
-					label: "Xray Key",
-					property: "Xray"
-				}, {
-					type: "keybind",
-					label: "AutoBridge Key",
-					property: "AutoBridge"
 				}]
 			},
 			right: {
-				Keybinds: [{
+				"Quality of Life": [{
 					type: "keybind",
-					label: "PathFinder Key",
-					property: "PathFinder"
-				}, {
-					type: "keybind",
-					label: "AutoTotem Key",
-					property: "AutoTotem"
-				}, {
-					type: "keybind",
-					label: "AutoFarm Key",
-					property: "AutoFarm"
-				}, {
-					type: "keybind",
-					label: "AutoEmerald Key",
-					property: "AutoEmerald"
-				}, {
-					type: "keybind",
-					label: "Spectator Key",
-					property: "Spectator"
-				}, {
-					type: "keybind",
-					label: "DropSword Key",
-					property: "DropSword"
-				}, {
-					type: "keybind",
-					label: "AutoCraft Key",
-					property: "AutoCraft"
-				}, {
-					type: "keybind",
-					label: "AutoRecycle Key",
-					property: "AutoRecycle"
-				}]
-			}
-		},
-		autofarm: {
-			left: {
-				AutoFarm: [{
-					type: "checkbox",
-					text: "Start AutoFarm",
-					setting: "Settings",
-					property: "AutoFarm"
-				}, {
-					type: "checkbox",
-					text: "AutoWater",
-					setting: "Settings",
-					property: "AutoFarmWater"
-				}]
-			},
-			right: {
-				Coordinates: [{
-					type: "button",
-					text: "Top left of Farm",
-					action: "setAutoFarmTopLeft"
-				}, {
-					type: "button",
-					text: "Bottom right of Farm",
-					action: "setAutoFarmBottomRight"
-				}, {
-					type: "button",
-					text: "Safe Point",
-					action: "setAutoFarmSafePoint"
-				}, {
-					type: "label",
-					text: "X",
-					configKey: "AutoFarmX"
-				}, {
-					type: "label",
-					text: "Y",
-					configKey: "AutoFarmY"
-				}, {
-					type: "label",
-					text: "X1",
-					configKey: "AutoFarmX1"
-				}, {
-					type: "label",
-					text: "Y1",
-					configKey: "AutoFarmY1"
-				}, {
-					type: "label",
-					text: "SX",
-					configKey: "AutoFarmSX"
-				}, {
-					type: "label",
-					text: "SY",
-					configKey: "AutoFarmSY"
-				}]
-			}
-		},
-		pathfinder: {
-			left: {
-				PathFinder: [{
-					type: "checkbox",
-					text: "Start PathFinder",
-					setting: "Settings",
-					property: "PathFinder"
-				}, {
-					type: "checkbox",
-					text: "Put Inventory to Chest",
-					setting: "Settings",
-					property: "PathFinderPutInv"
-				}]
-			},
-			right: {
-				Target: [{
-					type: "button",
-					text: "Set target location",
-					action: "setPathFinderTarget"
-				}, {
-					type: "label",
-					text: "Set X",
-					configKey: "PathFinderX"
-				}, {
-					type: "label",
-					text: "Set Y",
-					configKey: "PathFinderY"
-				}, {
-					type: "label",
-					text: "Target X",
-					configKey: "PathFinderTargetX"
-				}, {
-					type: "label",
-					text: "Target Y",
-					configKey: "PathFinderTargetY"
-				}]
-			}
-		},
-		autosteal: {
-			left: {
-				AutoSteal: [{
-					type: "keybind",
-					label: "AutoSteal Key",
+					label: "Auto Steal Key",
 					property: "autosteal"
-				}, {
-					type: "checkbox",
-					text: "AutoUnlock",
-					setting: "Settings",
-					property: "AutoUnlock"
-				}]
-			},
-			right: {
-				SmartSteal: [{
-					type: "slider",
-					label: "ItemID",
-					setting: "settingConfigs",
-					property: "AutoStealItemID",
-					min: 0,
-					max: 255,
-					step: 1
-				}, {
-					type: "button",
-					text: "Add Item ID to SmartSteal",
-					action: "addAutoStealItem"
-				}, {
-					type: "button",
-					text: "Delete ID",
-					action: "deleteAutoStealItem"
-				}, {
-					type: "button",
-					text: "Clear",
-					action: "clearAutoStealList"
 				}]
 			}
-		},
-		autospike: {
-			left: {
-				AutoSpike: [{
-					type: "keybind",
-					label: "AutoSpike Key",
-					property: "AutoSpike"
-				}, {
-					type: "checkbox",
-					text: "AutoSpike 2 (360)",
-					setting: "Settings",
-					property: "AutoSpike2"
-				}]
-			},
-			right: {
-				Priority: [{
-					type: "label",
-					text: "1",
-					configIndex: 0
-				}, {
-					type: "label",
-					text: "2",
-					configIndex: 1
-				}, {
-					type: "label",
-					text: "3",
-					configIndex: 2
-				}, {
-					type: "label",
-					text: "4",
-					configIndex: 3
-				}, {
-					type: "label",
-					text: "5",
-					configIndex: 4
-				}, {
-					type: "label",
-					text: "6",
-					configIndex: 5
-				}, {
-					type: "label",
-					text: "7",
-					configIndex: 6
-				}]
-			}
-		},
-		autocraft: {
-			left: {
-				"AutoCraft&Recycle": [{
-					type: "checkbox",
-					text: "AutoCraft",
-					setting: "Settings",
-					property: "AutoCraft"
-				}, {
-					type: "checkbox",
-					text: "AutoRecycle",
-					setting: "Settings",
-					property: "AutoRecycle"
-				}]
-			},
-			right: {
-				Keybinds: [{
-					type: "keybind",
-					label: "AutoCraft Key",
-					property: "AutoCraft"
-				}, {
-					type: "keybind",
-					label: "AutoRecycle Key",
-					property: "AutoRecycle"
-				}]
-			}
-		},
-		token: {
-			left: {
-				Token: [{
-					type: "button",
-					text: "Copy Token and TokenID",
-					action: "copyToken"
-				}]
-			},
-			right: {}
 		}
 	},
 	theme = {
@@ -1021,7 +542,7 @@ const features = {
 	style = document.createElement("style");
 style.innerHTML = `\n        @import url("https:fonts.googleapis.com/css?family=Baloo+Paaji");\n        #compact-menu, #compact-menu * { box-sizing: border-box; outline: none; }\n        \n        #compact-menu {\n            position: fixed; top: 50px; left: 50px;\n            width: ${theme.width}; height: ${theme.height};\n            min-width: 600px; min-height: 450px;\n            background-color: ${theme.bg};\n            border: 1px solid ${theme.border};\n            color: ${theme.textMain};\n            font-family: ${theme.fontFamily};\n            font-size: ${theme.fontSize}; \n            z-index: 10000;\n            display: flex; flex-direction: column; \n            user-select: none; border-radius: 8px;\n            box-shadow: 0 20px 50px rgba(0,0,0,0.8);\n            opacity: 0.3; \n            transition: opacity 0.3s ease, box-shadow 0.3s ease;\n            cursor: move;\n        }\n        #compact-menu:hover { opacity: 1.0; box-shadow: 0 25px 60px rgba(0,0,0,0.9); }\n        \n        .menu-header {\n            height: 3.25em; \n            background: linear-gradient(180deg, ${theme.sidebarBg} 0%, #141414 100%);\n            border-bottom: 1px solid ${theme.border}; display: flex; align-items: center;\n            padding: 0 1.25em; flex-shrink: 0; overflow: hidden;\n        }\n        .menu-title {\n            font-weight: 800; font-size: 1.4em; color: ${theme.accent}; margin-right: 1.5em;\n            letter-spacing: 1px; text-shadow: 0 0 15px ${theme.accentGlow}; flex-shrink: 0; margin-top: 0.3em;\n        }\n        .tabs-scroll-area {\n            display: flex; align-items: center; height: 100%; overflow-x: auto; \n            scrollbar-width: none; -ms-overflow-style: none; flex-grow: 1; cursor: grab;\n            mask-image: linear-gradient(to right, transparent, black 15px, black 95%, transparent);\n            -webkit-mask-image: linear-gradient(to right, transparent, black 15px, black 95%, transparent);\n        }\n        .tabs-scroll-area::-webkit-scrollbar { display: none; }\n        \n        .tab-btn {\n            background: transparent; border: none; color: ${theme.textDim};\n            font-family: ${theme.fontFamily}; font-size: 1em; font-weight: 600; \n            padding: 0 1em; height: 100%; cursor: pointer; transition: all 0.2s ease; \n            position: relative; text-transform: uppercase; flex-shrink: 0; white-space: nowrap;\n            letter-spacing: 0.5px; padding-top: 0.4em;\n        }\n        .tab-btn:hover { color: #fff; }\n        .tab-btn.active { color: #fff; background: rgba(255,255,255,0.02); }\n        .tab-btn.active::after {\n            content: ""; position: absolute; bottom: 0; left: 0; width: 100%; height: 4px; \n            background: ${theme.accent}; box-shadow: 0 -2px 12px ${theme.accentGlow};\n        }\n        \n        .menu-content { \n            flex: 1; display: flex; padding: 1.25em; gap: 1.25em; height: 100%; \n            overflow-y: auto; background-color: ${theme.bg}; cursor: default; \n        }\n        .col { flex: 1; display: flex; flex-direction: column; gap: 1em; min-width: 0; padding-bottom: 4em; }\n        \n        .group-box {\n            border: 1px solid ${theme.border}; background-color: ${theme.panelBg};\n            padding: 1em; padding-top: 1.5em; border-radius: 8px; position: relative;\n            background: linear-gradient(135deg, #1f1f1f 0%, #1a1a1a 100%);\n        }\n        .group-title {\n            position: absolute; top: -0.8em; left: 0.75em; background-color: ${theme.panelBg};\n            padding: 0 0.5em; color: ${theme.accent}; font-size: 0.8em; font-weight: 700; \n            text-transform: uppercase; border: 1px solid ${theme.border}; border-radius: 4px; white-space: nowrap;\n        }\n        \n        .info-icon {\n            width: 1.2em; height: 1.2em; border: 1px solid #444; color: #777; border-radius: 50%;\n            font-size: 0.75em; font-weight: bold; display: inline-flex; justify-content: center; \n            align-items: center; cursor: help; margin-left: 0.5em; transition: all 0.2s; \n            vertical-align: middle; position: relative; top: -1px;\n        }\n        .info-icon:hover { border-color: ${theme.accent}; color: #fff; background: ${theme.accent}; }\n        \n        #global-gif-tooltip {\n            position: fixed; width: 15em; background: rgba(18, 18, 18, 0.95); backdrop-filter: blur(8px);\n            border: 1px solid ${theme.border}; box-shadow: 0 15px 40px rgba(0,0,0,0.8);\n            padding: 0.6em; z-index: 2147483647; display: none; pointer-events: none; border-radius: 6px; \n            font-family: ${theme.fontFamily}; font-size: ${theme.fontSize}; \n        }\n        .gif-image { width: 100%; height: 8em; background: #080808; object-fit: cover; border-radius: 4px; margin-bottom: 0.4em; border: 1px solid #222; }\n        .gif-text { color: #ccc; font-size: 0.8em; line-height: 1.4; font-weight: 400; }\n        .gif-title { color: ${theme.accent}; font-weight: 700; font-size: 0.9em; margin-bottom: 0.3em; display: block; border-bottom: 1px solid #333; padding-bottom: 0.3em; }\n        \n        .control-item { display: flex; align-items: center; margin-bottom: 0.6em; cursor: pointer; transition: opacity 0.2s; }\n        .control-item:hover { opacity: 0.9; }\n        .checkbox-custom {\n            width: 1.1em; height: 1.1em; background: #121212; border: 1px solid #3a3a3a; \n            margin-right: 0.6em; border-radius: 4px; flex-shrink: 0; display: flex; justify-content: center; align-items: center; transition: all 0.2s;\n        }\n        .checkmark-svg { width: 0.7em; height: 0.7em; fill: none; stroke: #fff; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; transform: scale(0); transition: transform 0.2s cubic-bezier(0.4, 0.0, 0.2, 1); }\n        .control-item.active .checkbox-custom { background: ${theme.accent}; border-color: ${theme.accent}; box-shadow: 0 0 10px ${theme.accentGlow}; }\n        .control-item.active .checkmark-svg { transform: scale(1); }\n        .control-item span { font-weight: 500; font-size: 1em; }\n        \n        .slider-wrapper { margin-bottom: 1.25em; width: 100%; position: relative; }\n        .custom-range {\n            font-size:0.8em; -webkit-appearance: none; width: 100%; height: 0.8em; background: transparent; outline: none; display: block; cursor: pointer; margin: 0; padding: 0;\n            background-image: linear-gradient(#2a2a2a, #2a2a2a); background-size: 100% 6px; background-position: center; background-repeat: no-repeat;\n        }\n        .custom-range::-webkit-slider-thumb {\n            -webkit-appearance: none; appearance: none; width: 0.9em; height: 0.9em; \n            background: ${theme.accent}; cursor: pointer; border-radius: 50%; box-shadow: 0 0 8px ${theme.accentGlow}; \n            border: 2px solid #fff; margin-top: 0; transition: transform 0.1s;\n        }\n        .custom-range::-webkit-slider-thumb:hover { transform: scale(1.1); }\n        .slider-val-bubble {\n            position: absolute; bottom: 1.1em; left: 0; background: ${theme.accent}; color: #fff; \n            padding: 0.1em 0.4em; border-radius: 4px; font-size: 0.9em; font-weight: 600; \n            pointer-events: none; text-align: center; min-width: 2em; transform: translateX(-50%); opacity: 0; transition: opacity 0.2s; \n            box-shadow: 0 2px 5px rgba(0,0,0,0.5); z-index: 10;\n        }\n        .slider-wrapper:hover .slider-val-bubble, .custom-range:active + .slider-val-bubble { opacity: 1; }\n        .slider-val-bubble::after { content: ""; position: absolute; top: 100%; left: 50%; margin-left: -4px; border-width: 4px; border-style: solid; border-color: ${theme.accent} transparent transparent transparent; }\n        \n        .input-wrapper, .dropdown-wrapper { margin-bottom: 1em; width: 100%; }\n        .label-row { display: flex; align-items: center; margin-bottom: 0.3em; }\n        .input-label { font-size: 1em; color: ${theme.textMain}; margin: 0; font-weight: 500;}\n        .custom-input, .custom-select { \n            width: 100%; background: #121212; border: 1px solid #3a3a3a; color: ${theme.textMain}; \n            padding: 0.5em 0.6em; border-radius: 4px; font-family: ${theme.fontFamily}; font-size: 0.9em; \n            transition: border 0.2s, box-shadow 0.2s; \n        }\n        .custom-input:focus, .custom-select:focus { border-color: ${theme.accent}; box-shadow: 0 0 0 1px ${theme.accentGlow}; }\n        .custom-select { appearance: none; background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%232860b0%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E"); background-repeat: no-repeat; background-position: right 0.5em center; background-size: 0.9em; padding-right: 1.8em; cursor: pointer; }\n        \n        .keybind-wrapper { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6em; }\n        .keybind-btn { background: #121212; border: 1px solid #3a3a3a; color: ${theme.textDim}; padding: 0.3em 0.6em; border-radius: 4px; font-size: 0.8em; font-weight: 600; min-width: 4em; text-align: center; cursor: pointer; transition: all 0.2s; }\n        .keybind-btn:hover { border-color: ${theme.accent}; color: #fff; }\n        /* Style for recording state */\n        .keybind-btn.recording { border-color: #ffcc00; color: #ffcc00; animation: pulse 1s infinite; }\n        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }\n\n        .custom-btn { \n            width: 100%; background: linear-gradient(to bottom, #252525, #1f1f1f); border: 1px solid #3a3a3a; color: ${theme.textMain}; \n            padding: 0.6em 0; border-radius: 4px; font-family: ${theme.fontFamily}; font-weight: 600; font-size: 0.9em; \n            margin-bottom: 0.8em; cursor: pointer; transition: all 0.2s; \n        }\n        .custom-btn:hover { border-color: ${theme.accent}; color: #fff; background: ${theme.accent}; }\n        \n        .resize-handle { position: absolute; bottom: 0; right: 0; width: 22px; height: 22px; cursor: nwse-resize; z-index: 100001; border-bottom: 4px solid ${theme.accent}; border-right: 4px solid ${theme.accent}; border-top: 16px solid transparent; border-left: 16px solid transparent; }\n        .menu-content::-webkit-scrollbar { width: 6px; }\n        .menu-content::-webkit-scrollbar-track { background: transparent; }\n        .menu-content::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }\n        .menu-content::-webkit-scrollbar-thumb:hover { background: ${theme.accent}; }\n    `, document.head.appendChild(style);
 const menu = document.createElement("div");
-menu.id = "compact-menu", menu.innerHTML = '\n        <div class="menu-header" id="menu-drag-area">\n            <div class="menu-title">2 Re (Xmre)</div>\n            <div class="tabs-scroll-area" id="tabs-container">\n                <button class="tab-btn active" data-tab="visuals">Visuals</button>\n                <button class="tab-btn" data-tab="misc">Misc</button>\n                <button class="tab-btn" data-tab="binds">Binds</button>\n                <button class="tab-btn" data-tab="autofarm">AutoFarm</button>\n                <button class="tab-btn" data-tab="pathfinder">PathFinder</button>\n                <button class="tab-btn" data-tab="autosteal">AutoSteal</button>\n                <button class="tab-btn" data-tab="autospike">AutoSpike</button>\n                <button class="tab-btn" data-tab="autocraft">AutoCraft&Recycle</button>\n                <button class="tab-btn" data-tab="token">Token</button>\n            </div>\n        </div>\n        <div class="menu-content" id="menu-content-area"></div>\n        <div class="resize-handle" id="menu-resize"></div>\n    ', document.body.appendChild(menu);
+menu.id = "compact-menu", menu.innerHTML = '\n        <div class="menu-header" id="menu-drag-area">\n            <div class="menu-title">Loux [BETA]</div>\n            <div class="tabs-scroll-area" id="tabs-container">\n                <button class="tab-btn active" data-tab="visuals">Visuals</button>\n                <button class="tab-btn" data-tab="misc">Misc</button>\n            </div>\n        </div>\n        <div class="menu-content" id="menu-content-area"></div>\n        <div class="resize-handle" id="menu-resize"></div>\n    ', document.body.appendChild(menu);
 const tooltipContainer = document.createElement("div");
 tooltipContainer.id = "global-gif-tooltip", tooltipContainer.innerHTML = '<span class="gif-title">Feature Name</span><img class="gif-image" src="" alt="preview"><div class="gif-text">Description goes here.</div>', document.body.appendChild(tooltipContainer);
 let currentBindButton = null,
@@ -1101,62 +622,6 @@ function loadTab(tabName) {
 						}
 						currentBindButton = btn, currentBindProperty = item.property, btn.innerText = "[ ... ]", btn.classList.add("recording")
 					}, wrapper.appendChild(btn), group.appendChild(wrapper)
-				} else if ("button" === item.type) {
-					const btn = document.createElement("button");
-					btn.className = "custom-btn", btn.innerText = item.text, btn.onclick = () => {
-						if (item.action) {
-							if ("setAutoFarmTopLeft" === item.action) {
-								settingConfigs.AutoFarmX = Math.round(օ‌.x);
-								settingConfigs.AutoFarmY = Math.round(օ‌.y);
-								loadTab(tabName);
-							} else if ("setAutoFarmBottomRight" === item.action) {
-								settingConfigs.AutoFarmX1 = Math.round(օ‌.x);
-								settingConfigs.AutoFarmY1 = Math.round(օ‌.y);
-								loadTab(tabName);
-							} else if ("setAutoFarmSafePoint" === item.action) {
-								settingConfigs.AutoFarmSX = Math.round(օ‌.x);
-								settingConfigs.AutoFarmSY = Math.round(օ‌.y);
-								loadTab(tabName);
-							} else if ("setPathFinderTarget" === item.action) {
-								settingConfigs.PathFinderTargetX = Math.round(օ‌.x);
-								settingConfigs.PathFinderTargetY = Math.round(օ‌.y);
-								loadTab(tabName);
-							} else if ("addAutoStealItem" === item.action) {
-								const id = settingConfigs.AutoStealItemID;
-								if (!settingConfigs.AutoStealList.includes(id)) {
-									settingConfigs.AutoStealList.push(id);
-								}
-							} else if ("deleteAutoStealItem" === item.action) {
-								const id = settingConfigs.AutoStealItemID;
-								const idx = settingConfigs.AutoStealList.indexOf(id);
-								if (idx > -1) settingConfigs.AutoStealList.splice(idx, 1);
-							} else if ("clearAutoStealList" === item.action) {
-								settingConfigs.AutoStealList = [];
-							} else if ("copyToken" === item.action) {
-								try {
-									const token = localStorage.getItem("token") || "No token found";
-									const tokenId = localStorage.getItem("token_id") || "No token ID found";
-									navigator.clipboard.writeText(`Token: ${token}\nTokenID: ${tokenId}`);
-									btn.innerText = "Copied!";
-									setTimeout(() => btn.innerText = item.text, 2000);
-								} catch(e) {
-									btn.innerText = "Failed!";
-									setTimeout(() => btn.innerText = item.text, 2000);
-								}
-							}
-						}
-					}, group.appendChild(btn)
-				} else if ("label" === item.type) {
-					const wrapper = document.createElement("div");
-					wrapper.className = "keybind-wrapper";
-					let displayValue = "N/A";
-					if (item.configKey) {
-						displayValue = settingConfigs[item.configKey] !== undefined ? settingConfigs[item.configKey] : "N/A";
-					} else if (item.configIndex !== undefined) {
-						displayValue = settingConfigs.AutoSpikeList[item.configIndex] !== undefined ? settingConfigs.AutoSpikeList[item.configIndex] : "N/A";
-					}
-					wrapper.innerHTML = `<span>${item.text}</span><span style="color: ${theme.accent}">${displayValue}</span>`;
-					group.appendChild(wrapper)
 				} else item.type
 			}), colDiv.appendChild(group)
 		}), content.appendChild(colDiv)
@@ -64368,7 +63833,7 @@ function ᴑ‍οοᴏ() {
 	}
 	for (var ᴏo = ⲟoo; o‍ⲟ.length > ᴏo; ᴏo++) {
 		var oⲟᴑ = o‍ⲟ[ᴏo];
-		if (oⲟᴑ.oоᴏ <= 0 || (!Settings.UltraZoom && (oⲟᴑ.x > -օ‌.ᴏᴏ‌.x + ᴑᴏᴏ || -օ‌.ᴏᴏ‌.x > oⲟᴑ.x || oⲟᴑ.y > -օ‌.ᴏᴏ‌.y + оοⲟ))) o‍ⲟ.splice(ᴏo, 1)
+		if (oⲟᴑ.oоᴏ <= 0 || oⲟᴑ.x > -օ‌.ᴏᴏ‌.x + ᴑᴏᴏ || -օ‌.ᴏᴏ‌.x > oⲟᴑ.x || oⲟᴑ.y > -օ‌.ᴏᴏ‌.y + оοⲟ) o‍ⲟ.splice(ᴏo, 1)
 	}
 	var օⲟо = -օ‌.ᴏᴏ‌.y;
 	if (ο‍.ο‌oօᴏ > -1e3) ⲟⲟօ‌ᴑ.add(օⲟо)
@@ -65266,7 +64731,7 @@ function ⲟоօoᴑ() {
 	}
 	for (var ᴏo = 0; o‍ⲟ.length > ᴏo; ᴏo++) {
 		var oⲟᴑ = o‍ⲟ[ᴏo];
-		if (0 >= oⲟᴑ.oоᴏ || (!Settings.UltraZoom && (oⲟᴑ.x > -օ‌.ᴏᴏ‌.x + ᴑᴏᴏ || -օ‌.ᴏᴏ‌.x > oⲟᴑ.x || oⲟᴑ.y > -օ‌.ᴏᴏ‌.y + оοⲟ))) o‍ⲟ.splice(ᴏo, 1)
+		if (0 >= oⲟᴑ.oоᴏ || oⲟᴑ.x > -օ‌.ᴏᴏ‌.x + ᴑᴏᴏ || -օ‌.ᴏᴏ‌.x > oⲟᴑ.x || oⲟᴑ.y > -օ‌.ᴏᴏ‌.y + оοⲟ) o‍ⲟ.splice(ᴏo, 1)
 	}
 	var օⲟо = -օ‌.ᴏᴏ‌.y;
 	if (ο‍.ᴏ‍οo‌ > -1e3) ᴏᴏօоo.add(օⲟо)
@@ -65564,7 +65029,7 @@ function օoᴑ‌ᴑ() {
 	}
 	for (var ᴏo = 0; ᴏo < o‍ⲟ.length; ᴏo++) {
 		var oⲟᴑ = o‍ⲟ[ᴏo];
-		if (0 >= oⲟᴑ.oоᴏ || (!Settings.UltraZoom && (oⲟᴑ.x > -օ‌.ᴏᴏ‌.x + ᴑᴏᴏ || -օ‌.ᴏᴏ‌.x - օ‌.ᴏᴏ‌.w / 2 > oⲟᴑ.x || -օ‌.ᴏᴏ‌.y + оοⲟ < oⲟᴑ.y))) o‍ⲟ.splice(ᴏo, 1)
+		if (0 >= oⲟᴑ.oоᴏ || oⲟᴑ.x > -օ‌.ᴏᴏ‌.x + ᴑᴏᴏ || -օ‌.ᴏᴏ‌.x - օ‌.ᴏᴏ‌.w / 2 > oⲟᴑ.x || -օ‌.ᴏᴏ‌.y + оοⲟ < oⲟᴑ.y) o‍ⲟ.splice(ᴏo, 1)
 	}
 	var օⲟо = -օ‌.ᴏᴏ‌.y;
 	if (-1e3 < ο‍.ⲟ‌ⲟᴏⲟ) ооᴑᴑᴑ.add(օⲟо)
@@ -68215,29 +67680,13 @@ function οᴑᴏ‍ο() {
 		"οοo": 0,
 		"ᴏo": 0
 	};
-	this.uzIdx = 0;
 	this.οⲟᴑoᴑ = function() {
 		if (ᴏ‍o.օ‌oο‌ < оᴑᴑօ‍ - this.օ‍ⲟоο) {
 			this.օ‍ⲟоο = оᴑᴑօ‍;
 			var οⲟо = օ‌.ᴏᴏ‌;
 			var ᴏo = Math.floor(οⲟо.x / 100);
 			var οοo = Math.floor(οⲟо.y / 100);
-			if (Settings.UltraZoom) {
-				var range = settingConfigs.ultraZoomRange || 600;
-				var offsets = [
-					{ x: -range, y: -range },
-					{ x: range, y: -range },
-					{ x: -range, y: range },
-					{ x: range, y: range }
-				];
-				var off = offsets[this.uzIdx % 4];
-				this.uzIdx++;
-				this.ⲟⲟⲟ[ᴏοо](ooⲟo‌[οоᴏοօ].stringify([0, Math.floor(-οⲟо.x + off.x) + 343, Math.floor(-οⲟо.y + off.y) + 160]));
-				this.օοᴏⲟ‍.ᴏo = ᴏo;
-				this.օοᴏⲟ‍.οοo = οοo;
-			} else {
-				(this.օοᴏⲟ‍.ᴏo != ᴏo || οοo != this.օοᴏⲟ‍.οοo) && (this.ⲟⲟⲟ[ᴏοо](ooⲟo‌[οоᴏοօ].stringify([0, Math.floor(-οⲟо.x) + 343, Math.floor(-οⲟо.y) + 160])), this.օοᴏⲟ‍.ᴏo = ᴏo, this.օοᴏⲟ‍.οοo = οοo)
-			}
+			(this.օοᴏⲟ‍.ᴏo != ᴏo || οοo != this.օοᴏⲟ‍.οοo) && (this.ⲟⲟⲟ[ᴏοо](ooⲟo‌[οоᴏοօ].stringify([0, Math.floor(-οⲟо.x) + 343, Math.floor(-οⲟо.y) + 160])), this.օοᴏⲟ‍.ᴏo = ᴏo, this.օοᴏⲟ‍.οοo = οοo)
 		}
 	};
 	this.օⲟooо = 0;
@@ -69105,10 +68554,10 @@ function οᴑᴏ‍ο() {
 						օօ.ⲟᴏоᴏo();
 						break;
 					case 52:
-						if (!Settings.UltraZoom) օօ.οᴏօ‌‌(оο‌[1] + (оο‌[2] << 8));
+						օօ.οᴏօ‌‌(оο‌[1] + (оο‌[2] << 8));
 						break;
 					case 53:
-						if (!Settings.UltraZoom) օօ.оᴑᴏⲟօ(оο‌[1] + 256 * оο‌[2]);
+						օօ.оᴑᴏⲟօ(оο‌[1] + 256 * оο‌[2]);
 						break;
 					case 54:
 						օօ.օоooо‌ᴑ();
@@ -79577,22 +79026,7 @@ function oоοο‌oo(օⲟ, οⲟ) {
 		օօo.code === window.keybindSettings.AutoSpike.key && !օ‌.ⲟ‍oоо.open && !օ‌.οoⲟoο.open && (Settings.AutoSpike = true);
 		օօo.code === window.keybindSettings.autosteal.key && !օ‌.ⲟ‍oоо.open && !օ‌.οoⲟoο.open && (Settings.autosteal = !Settings.autosteal);
 		օօo.code === window.keybindSettings.Spectator.key && !օ‌.ⲟ‍oоо.open && !օ‌.οoⲟoο.open && (Settings.Spectator = !Settings.Spectator);
-		օօo.code === window.keybindSettings.UltraZoom.key && !օ‌.ⲟ‍oоо.open && !օ‌.οoⲟoο.open && (Settings.UltraZoom = !Settings.UltraZoom);
 		օօo.code === window.keybindSettings.Xray.key && !օ‌.ⲟ‍oоо.open && !օ‌.οoⲟoο.open && (Settings.Xray = !Settings.Xray);
-		օօo.code === window.keybindSettings.AutoExtractorTake.key && !օ‌.ⲟ‍oоо.open && !օ‌.οoⲟoο.open && (Settings.AutoExtractorTake = !Settings.AutoExtractorTake);
-		օօo.code === window.keybindSettings.AutoExtractorPut.key && !օ‌.ⲟ‍oоо.open && !օ‌.οoⲟoο.open && (Settings.AutoExtractorPut = !Settings.AutoExtractorPut);
-		օօo.code === window.keybindSettings.AutoBreadTake.key && !օ‌.ⲟ‍oоо.open && !օ‌.οoⲟoο.open && (Settings.AutoBreadTake = !Settings.AutoBreadTake);
-		օօo.code === window.keybindSettings.AutoBreadPut.key && !օ‌.ⲟ‍oоо.open && !օ‌.οoⲟoο.open && (Settings.AutoBreadPut = !Settings.AutoBreadPut);
-		օօo.code === window.keybindSettings.Aimbot.key && !օ‌.ⲟ‍oоо.open && !օ‌.οoⲟoο.open && (Settings.Aimbot = !Settings.Aimbot);
-		օօo.code === window.keybindSettings.AutoTame.key && !օ‌.ⲟ‍oоо.open && !օ‌.οoⲟoο.open && (Settings.AutoTame = !Settings.AutoTame);
-		օօo.code === window.keybindSettings.AutoBridge.key && !օ‌.ⲟ‍oоо.open && !օ‌.οoⲟoο.open && (Settings.AutoBridge = !Settings.AutoBridge);
-		օօo.code === window.keybindSettings.PathFinder.key && !օ‌.ⲟ‍oоо.open && !օ‌.οoⲟoο.open && (Settings.PathFinder = !Settings.PathFinder);
-		օօo.code === window.keybindSettings.AutoTotem.key && !օ‌.ⲟ‍oоо.open && !օ‌.οoⲟoο.open && (Settings.AutoTotem = !Settings.AutoTotem);
-		օօo.code === window.keybindSettings.AutoFarm.key && !օ‌.ⲟ‍oоо.open && !օ‌.οoⲟoο.open && (Settings.AutoFarm = !Settings.AutoFarm);
-		օօo.code === window.keybindSettings.AutoEmerald.key && !օ‌.ⲟ‍oоо.open && !օ‌.οoⲟoο.open && (Settings.AutoEmerald = !Settings.AutoEmerald);
-		օօo.code === window.keybindSettings.DropSword.key && !օ‌.ⲟ‍oоо.open && !օ‌.οoⲟoο.open && (Settings.DropSword = !Settings.DropSword);
-		օօo.code === window.keybindSettings.AutoCraft.key && !օ‌.ⲟ‍oоо.open && !օ‌.οoⲟoο.open && (Settings.AutoCraft = !Settings.AutoCraft);
-		օօo.code === window.keybindSettings.AutoRecycle.key && !օ‌.ⲟ‍oоо.open && !օ‌.οoⲟoο.open && (Settings.AutoRecycle = !Settings.AutoRecycle);
 		οоοοo.ⲟoᴏoo(օօo);
 		8 == օօo.keyCode && !օ‌.ⲟ‍oоо["open"] && !օ‌.οoⲟoο["open"] && օօo.preventDefault()
 	};
@@ -81120,142 +80554,6 @@ function oo‌(ⲟоο‌‌) {
 				}
 			}
 		}
-		// Sandworm Tracers - entity type oο.ⲟооօo = 91
-		if (Settings.SandwormTracers) {
-			const myPlayer = ο‍.oоⲟ[օ‌.id * ο‍.oօoⲟ‍];
-			if (myPlayer && ο‍.օᴏ && ο‍.օᴏ[91]) {
-				for (let e = 0; e < ο‍.օᴏ[91].length; e++) {
-					let entity = ο‍.օᴏ[91][e];
-					if (entity && entity.x !== undefined) {
-								οⲟ.save();
-								οⲟ.beginPath();
-								οⲟ.lineWidth = 3;
-								οⲟ.moveTo(օ‌.ᴏᴏ‌.x + myPlayer.x, օ‌.ᴏᴏ‌.y + myPlayer.y);
-								οⲟ.lineTo(օ‌.ᴏᴏ‌.x + entity.x, օ‌.ᴏᴏ‌.y + entity.y);
-								οⲟ.strokeStyle = "#FF6600";
-								οⲟ.stroke();
-								// Draw label
-								οⲟ.font = "14px Baloo Paaji";
-								οⲟ.fillStyle = "#FF6600";
-								οⲟ.strokeStyle = "black";
-								οⲟ.lineWidth = 3;
-								let dist = Math.round(Math.sqrt((myPlayer.x - entity.x) ** 2 + (myPlayer.y - entity.y) ** 2));
-								οⲟ.strokeText("Sandworm [" + dist + "]", օ‌.ᴏᴏ‌.x + entity.x - 40, օ‌.ᴏᴏ‌.y + entity.y - 50);
-						οⲟ.fillText("Sandworm [" + dist + "]", օ‌.ᴏᴏ‌.x + entity.x - 40, օ‌.ᴏᴏ‌.y + entity.y - 50);
-						οⲟ.restore()
-					}
-				}
-			}
-		}
-		// Kraken Tracers - entity type oο.ⲟooօᴑ = 101
-		if (Settings.KrakenTracers) {
-			const myPlayer = ο‍.oоⲟ[օ‌.id * ο‍.oօoⲟ‍];
-			if (myPlayer && ο‍.օᴏ && ο‍.օᴏ[101]) {
-				for (let e = 0; e < ο‍.օᴏ[101].length; e++) {
-					let entity = ο‍.օᴏ[101][e];
-					if (entity && entity.x !== undefined) {
-								οⲟ.save();
-								οⲟ.beginPath();
-								οⲟ.lineWidth = 3;
-								οⲟ.moveTo(օ‌.ᴏᴏ‌.x + myPlayer.x, օ‌.ᴏᴏ‌.y + myPlayer.y);
-								οⲟ.lineTo(օ‌.ᴏᴏ‌.x + entity.x, օ‌.ᴏᴏ‌.y + entity.y);
-								οⲟ.strokeStyle = "#00FFFF";
-								οⲟ.stroke();
-								// Draw label
-								οⲟ.font = "14px Baloo Paaji";
-								οⲟ.fillStyle = "#00FFFF";
-								οⲟ.strokeStyle = "black";
-								οⲟ.lineWidth = 3;
-								let dist = Math.round(Math.sqrt((myPlayer.x - entity.x) ** 2 + (myPlayer.y - entity.y) ** 2));
-								οⲟ.strokeText("Kraken [" + dist + "]", օ‌.ᴏᴏ‌.x + entity.x - 30, օ‌.ᴏᴏ‌.y + entity.y - 50);
-						οⲟ.fillText("Kraken [" + dist + "]", օ‌.ᴏᴏ‌.x + entity.x - 30, օ‌.ᴏᴏ‌.y + entity.y - 50);
-						οⲟ.restore()
-					}
-				}
-			}
-		}
-		// ESP - Extra player information (draw box around players)
-		if (Settings.Esp) {
-			const myPlayer = ο‍.oоⲟ[օ‌.id * ο‍.oօoⲟ‍];
-			// Players are stored in ο‍.օᴏ[oο.οօο] which is ο‍.օᴏ[0]
-			if (myPlayer && ο‍.օᴏ && ο‍.օᴏ[0]) {
-				for (let i = 0; i < ο‍.օᴏ[0].length; i++) {
-					let player = ο‍.օᴏ[0][i];
-					// Skip if not a valid player or is our own player
-					if (player && player.x !== undefined && player.ⲟᴑⲟ !== օ‌.id) {
-						οⲟ.save();
-						οⲟ.translate(օ‌.ᴏᴏ‌.x + player.x, օ‌.ᴏᴏ‌.y + player.y);
-						οⲟ.rotate(player.angle || 0);
-						
-						// Draw box - cyan for ally, red for enemy
-						οⲟ.lineWidth = 2.6;
-						οⲟ.strokeStyle = player.ally ? "cyan" : "red";
-						οⲟ.strokeRect(-20, -29, 45, 60);
-						
-						οⲟ.restore()
-					}
-				}
-			}
-		}
-		// Locked Chests Indicator
-		if (Settings.LockedChests) {
-			// Chests are entity type 38 (oο.ᴏ‌оⲟ‍)
-			if (ο‍.օᴏ && ο‍.օᴏ[38]) {
-				for (let e = 0; e < ο‍.օᴏ[38].length; e++) {
-					let chest = ο‍.օᴏ[38][e];
-					if (chest && chest.lock && chest.x !== undefined) {
-						οⲟ.save();
-						let screenX = օ‌.ᴏᴏ‌.x + chest.x;
-						let screenY = օ‌.ᴏᴏ‌.y + chest.y;
-						
-						// Draw lock icon
-						οⲟ.font = "16px Baloo Paaji";
-						οⲟ.fillStyle = "#FFD700";
-						οⲟ.strokeStyle = "black";
-						οⲟ.lineWidth = 3;
-						οⲟ.textAlign = "center";
-						οⲟ.strokeText("🔒", screenX, screenY - 40);
-						οⲟ.fillText("🔒", screenX, screenY - 40);
-						οⲟ.restore()
-					}
-				}
-			}
-		}
-		// BuildingInfo - Show contents of buildings with inventory (chest=38, extractors=24-28)
-		if (Settings.buildingInfo) {
-			// Only check specific building types that have inventories
-			// Chest type = 38, Extractors around 24-28
-			const buildingTypes = [38, 24, 25, 26, 27, 28];
-			for (let t = 0; t < buildingTypes.length; t++) {
-				let typeId = buildingTypes[t];
-				if (ο‍.օᴏ && ο‍.օᴏ[typeId]) {
-					for (let e = 0; e < ο‍.օᴏ[typeId].length; e++) {
-						let building = ο‍.օᴏ[typeId][e];
-						// Only show info for buildings that have contents (info property)
-						if (building && building.x !== undefined && building.info !== undefined) {
-							let screenX = օ‌.ᴏᴏ‌.x + building.x;
-							let screenY = օ‌.ᴏᴏ‌.y + building.y;
-							
-							// Draw building contents if available (like louxv3)
-							if (building.img && building.img.canvas) {
-								οⲟ.drawImage(building.img.canvas, screenX - 30, screenY - 50);
-							}
-							// If no canvas but has info, show the amount
-							else if (building.info) {
-								οⲟ.save();
-								οⲟ.font = "18px Baloo Paaji";
-								οⲟ.strokeStyle = "black";
-								οⲟ.lineWidth = 7;
-								οⲟ.fillStyle = "white";
-								οⲟ.strokeText("x" + building.info, screenX - 15, screenY);
-								οⲟ.fillText("x" + building.info, screenX - 15, screenY);
-								οⲟ.restore();
-							}
-						}
-					}
-				}
-			}
-		}
 		if (Settings.logJoinAndLeaves) {
 			const now = Date.now();
 			let drawY = 400;
@@ -82062,65 +81360,6 @@ function AutoFeed() {
 }
 let spikes = [329, 214, 272, 271, 270, 262, 264];
 
-// Item IDs for the new client
-const ITEMS = {
-	// Food
-	COOKED_MEAT: 3,
-	BREAD: 18,
-	SANDWICH: 125,
-	COOKIE: 126,
-	CAKE: 127,
-	// Water
-	BOTTLE_FULL: 31,
-	// Bandage
-	BANDAGE: 28,
-	// Spikes  
-	WOOD_SPIKE: 154,
-	STONE_SPIKE: 162,
-	GOLD_SPIKE: 163,
-	DIAMOND_SPIKE: 164,
-	AMETHYST_SPIKE: 117,
-	REIDITE_SPIKE: 213,
-	// Walls
-	WOOD_WALL: 156,
-	STONE_WALL: 157,
-	GOLD_WALL: 158,
-	DIAMOND_WALL: 159,
-	AMETHYST_WALL: 160,
-	REIDITE_WALL: 212,
-	// Misc
-	BRIDGE: 119,
-	TOTEM: 31,
-	PITCHFORK: 98,
-	BOOK: 90,
-	CROWN: 151,
-	LOCK: 89,
-	LOCKPICK: 88,
-	// Resources (for recycling)
-	WOOD: 0,
-	STONE: 1,
-	GOLD: 2,
-	DIAMOND: 4,
-	AMETHYST: 5,
-	REIDITE: 144
-};
-
-// Entity type IDs
-const ENTITIES = {
-	PLAYER: 0,
-	WOLF: 72,
-	SPIDER: 73,
-	CHEST: 38,
-	TOTEM: 31,
-	EXTRACTOR_STONE: 46,
-	EXTRACTOR_GOLD: 47,
-	BREAD_OVEN: 44,
-	WINDMILL: 45,
-	SANDWORM: 83,
-	KRAKEN: 84,
-	DRAGON: 85
-};
-
 function getBestSpike() {
 	for (let i = 0; i < spikes.length; i++) {
 		if (օ‌.օօ‌.օο‍[spikes[i]]) return spikes[i]
@@ -82128,702 +81367,63 @@ function getBestSpike() {
 	return -1
 }
 
-function calcAngle(p1, p2) {
-	return Math.atan2(p2.y - p1.y, p2.x - p1.x);
-}
-
-function dist2d(a, b) {
-	return Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2);
-}
-
-function normalizeAngle(angle) {
-	let pi2 = Math.PI * 2;
-	return Math.floor((angle + pi2) % pi2 * 255 / pi2);
-}
-
-function getPlayers() {
-	let players = [];
-	// Players are stored in ο‍.օᴏ[0] (oο.οօο = 0)
-	if (ο‍.օᴏ && ο‍.օᴏ[0]) {
-		for (let i = 0; i < ο‍.օᴏ[0].length; i++) {
-			let player = ο‍.օᴏ[0][i];
-			if (player && player.x !== undefined && player.ⲟᴑⲟ !== օ‌.id) {
-				player.playerId = player.ⲟᴑⲟ;
-				players.push(player);
-			}
-		}
-	}
-	return players;
-}
-
-function getEntitiesByType(typeIndex) {
-	let entities = [];
-	if (ο‍.օᴏ && ο‍.օᴏ[typeIndex]) {
-		for (let i = 0; i < ο‍.օᴏ[typeIndex].length; i++) {
-			let e = ο‍.օᴏ[typeIndex][i];
-			if (e && e.x !== undefined && e.y !== undefined) {
-				entities.push(e);
-			}
-		}
-	}
-	return entities;
-}
-
-function getNearestEntity(myPlayer, entities) {
-	let nearest = null;
-	let minDist = Infinity;
-	for (let e of entities) {
-		let d = dist2d(myPlayer, e);
-		if (d < minDist) {
-			minDist = d;
-			nearest = e;
-		}
-	}
-	return nearest;
-}
-
-function getNearestPlayer(myPlayer) {
-	let players = getPlayers();
-	let nearest = null;
-	let minDist = Infinity;
-	for (let p of players) {
-		// Check if enemy (not ally)
-		if (!p.ally) {
-			let d = dist2d(myPlayer, p);
-			if (d < minDist) {
-				minDist = d;
-				nearest = p;
-			}
-		}
-	}
-	return nearest;
-}
-
-function getChests() {
-	let chests = [];
-	// Chests are entity type 38
-	if (ο‍.օᴏ && ο‍.օᴏ[38]) {
-		for (let i = 0; i < ο‍.օᴏ[38].length; i++) {
-			let c = ο‍.օᴏ[38][i];
-			if (c && c.x !== undefined && c.y !== undefined) {
-				chests.push(c);
-			}
-		}
-	}
-	return chests;
-}
-
-function getExtractors() {
-	let extractors = [];
-	// Extractors convert resources - look for them in building types
-	if (ο‍.օᴏ) {
-		for (let typeId = 40; typeId < 70; typeId++) {
-			if (ο‍.օᴏ[typeId]) {
-				for (let i = 0; i < ο‍.օᴏ[typeId].length; i++) {
-					let e = ο‍.օᴏ[typeId][i];
-					if (e && e.x !== undefined && e.y !== undefined && e.ⲟᴑⲟ !== undefined) {
-						// Extractors have owner and info properties
-						extractors.push(e);
-					}
-				}
-			}
-		}
-	}
-	return extractors;
-}
-
-function getBreadOvens() {
-	let ovens = [];
-	// Ovens process wheat/flour
-	if (ο‍.օᴏ) {
-		for (let typeId = 40; typeId < 60; typeId++) {
-			if (ο‍.օᴏ[typeId]) {
-				for (let i = 0; i < ο‍.օᴏ[typeId].length; i++) {
-					let o = ο‍.օᴏ[typeId][i];
-					if (o && o.x !== undefined && o.y !== undefined && o.ⲟᴑⲟ !== undefined) {
-						ovens.push(o);
-					}
-				}
-			}
-		}
-	}
-	return ovens;
-}
-
-function getAnimals() {
-	let animals = [];
-	// Animals for taming (wolves, spiders, etc.) - check creature types
-	if (ο‍.օᴏ) {
-		for (let typeId = 70; typeId < 100; typeId++) {
-			if (ο‍.օᴏ[typeId]) {
-				for (let i = 0; i < ο‍.օᴏ[typeId].length; i++) {
-					let a = ο‍.օᴏ[typeId][i];
-					if (a && a.x !== undefined && a.y !== undefined) {
-						// Tameable animals don't have owner yet
-						if (!a.ⲟᴑⲟ || a.ⲟᴑⲟ === 0) {
-							animals.push(a);
-						}
-					}
-				}
-			}
-		}
-	}
-	return animals;
-}
-
-function getSandworms() {
-	let worms = [];
-	// Sandworm entity type = 91 (oο.ⲟооօo)
-	if (ο‍.օᴏ && ο‍.օᴏ[91]) {
-		for (let i = 0; i < ο‍.օᴏ[91].length; i++) {
-			let w = ο‍.օᴏ[91][i];
-			if (w && w.x !== undefined && w.y !== undefined) {
-				worms.push(w);
-			}
-		}
-	}
-	return worms;
-}
-
-function getKrakens() {
-	let krakens = [];
-	// Kraken entity type = 101 (oο.ⲟooօᴑ)
-	if (ο‍.օᴏ && ο‍.օᴏ[101]) {
-		for (let i = 0; i < ο‍.օᴏ[101].length; i++) {
-			let k = ο‍.օᴏ[101][i];
-			if (k && k.x !== undefined && k.y !== undefined) {
-				krakens.push(k);
-			}
-		}
-	}
-	return krakens;
-}
-
-function hasItem(itemId) {
-	return օ‌.օօ‌.օο‍[itemId] > 0;
-}
-
-function equipItem(socket, itemId) {
-	socket.send(JSON.stringify([5, itemId]));
-}
-
-function useItem(socket, itemId) {
-	socket.send(JSON.stringify([33, itemId]));
-}
-
-function craftItem(socket, itemId) {
-	socket.send(JSON.stringify([7, itemId]));
-}
-
-function recycleItem(socket, itemId) {
-	socket.send(JSON.stringify([29, itemId]));
-}
-
-function moveTowards(socket, targetX, targetY, myX, myY) {
-	let dx = targetX - myX;
-	let dy = targetY - myY;
-	let direction = 0;
-	
-	if (Math.abs(dx) > 50) {
-		if (dx > 0) direction += 2; // right
-		else direction += 1; // left
-	}
-	if (Math.abs(dy) > 50) {
-		if (dy > 0) direction += 4; // down
-		else direction += 8; // up
-	}
-	
-	socket.send(JSON.stringify([2, direction]));
-}
-
-function attack(socket, angle) {
-	let normalized = normalizeAngle(angle);
-	socket.send(JSON.stringify([4, normalized]));
-	socket.send(JSON.stringify([14]));
-}
-
-function lookAt(socket, angle) {
-	let normalized = normalizeAngle(angle);
-	socket.send(JSON.stringify([3, normalized]));
-}
-
-// Emerald machine positions (from louxv3)
-const EmeraldPos = [
-	[11779, 4978],
-	[12191, 4546],
-	[11366, 4546]
-];
-
-let lastAutoStealTime = 0;
-let lastAutoTameTime = 0;
-let lastAimbotTime = 0;
-let autoFarmState = 0; // 0 = idle, 1 = farming, 2 = returning
-let pathFinderState = 0;
-let AutoRespawnInterval = null;
-
 function LouxLoop() {
 	let socket = օoо.ⲟⲟⲟ;
 	let myPlayer = ο‍.oоⲟ[օ‌.id * ο‍.oօoⲟ‍];
 	if (!socket || socket.readyState !== WebSocket.OPEN) return;
+	if (!myPlayer && !Settings.Spectator) return socket.send(JSON.stringify([29]));
+	if (!myPlayer) return;
 	
-	// AutoRespawn when dead
-	if (!myPlayer) {
-		if (Settings.AutoRespawn && !AutoRespawnInterval) {
-			// Close socket and try to respawn using play function
-			try {
-				socket.close();
-				օօ.οoⲟо‍(); // Call the play function
-				AutoRespawnInterval = setInterval(() => {
-					// If socket not ready, try again
-					if (օoо.ⲟⲟⲟ && (օoо.ⲟⲟⲟ.readyState !== 0 && օoо.ⲟⲟⲟ.readyState !== 1)) {
-						օօ.οoⲟо‍();
-					}
-				}, 3000);
-			} catch (e) {
-				console.log("AutoRespawn error:", e);
-			}
+	// Aimbot
+	if (Settings.Aimbot) {
+		let weaponType = HoldWeapon(myPlayer.right, true);
+		let range = 0;
+		switch (weaponType) {
+			case 1: range = 180; break; // Sword
+			case 2: range = 280; break; // Bow
+			case 3: range = 600; break; // Spear
+			case 4: range = 130; break; // Hammer
+			case 5: range = 110; break; // Fist
 		}
-		return;
-	} else if (AutoRespawnInterval) {
-		// Clear interval when alive
-		clearInterval(AutoRespawnInterval);
-		AutoRespawnInterval = null;
-	}
-	
-	let myX = myPlayer.x;
-	let myY = myPlayer.y;
-	let pi2 = Math.PI * 2;
-	let angle = օ‌.ᴑoo‌o.angle;
-	let normalized = normalizeAngle(angle);
-	
-	// ============ COMBAT FEATURES ============
-	
-	// AutoSpike - place spikes around player
-	if (Settings.AutoSpike) {
-		let time = օ‌.ⲟ‍ᴏ‍ο.timeout.ᴑ‍;
-		if (!(time !== 0 && 1 - time > .1)) {
-			let type = getBestSpike();
-			if (type !== -1) {
-				Limit.E = true;
-				if (Settings.AutoSpike2) {
-					// 360 degree spike
-					for (let e = 0; e < 256; e += 8) {
-						sendPacketSafe(socket, [17, type, e, 0]);
+		if (range > 0) {
+			let players = ο‍.օᴏ[0]; // Player unit type is 0
+			let enemy = EnemyToAttack(myPlayer, players);
+			if (enemy) {
+				let distance = dist2dSQRT(myPlayer, enemy);
+				if (distance <= range) {
+					let angle = calcAngle(myPlayer, enemy);
+					window.AimbotAngle = angle;
+					let pi2 = 2 * Math.PI;
+					let normalized = Math.floor((angle + pi2) % pi2 * 255 / pi2);
+					socket.send(JSON.stringify([3, normalized])); // Look at target
+					if (distance <= range - 20) {
+						socket.send(JSON.stringify([4, normalized])); // Attack
+						socket.send(JSON.stringify([14])); // Confirm attack
 					}
 				} else {
-					// Normal spike around cursor
-					for (let e = 1; e < 31; e++) {
-						sendPacketSafe(socket, [17, type, (e + normalized) % 255, 0]);
-						sendPacketSafe(socket, [17, type, (normalized - e + 255) % 255, 0]);
-					}
+					window.AimbotAngle = null;
 				}
-				sendPacketSafe(socket, [17, type, normalized, 0]);
-				socket.send(JSON.stringify([10, normalized]));
-			}
-		}
-	}
-	
-	// Aimbot - auto aim at nearest enemy
-	if (Settings.Aimbot) {
-		let now = Date.now();
-		if (now - lastAimbotTime > 100) {
-			lastAimbotTime = now;
-			let target = getNearestPlayer(myPlayer);
-			if (target) {
-				let d = dist2d(myPlayer, target);
-				let weaponRange = 200; // default range
-				
-				// Check equipped weapon for range
-				if (myPlayer.right >= 0) {
-					switch (myPlayer.right) {
-						case 79: case 80: case 81: case 82: case 83: case 84: case 85: // swords
-							weaponRange = myPlayer.ⲟοо ? 196 : 157;
-							break;
-						case 86: case 87: case 88: case 89: case 90: case 91: case 92: // spears
-							weaponRange = myPlayer.ⲟοо ? 291 : 227;
-							break;
-					}
-				}
-				
-				if (d < weaponRange) {
-					let aimAngle = calcAngle(myPlayer, target);
-					lookAt(socket, aimAngle);
-					if (d < weaponRange - 20) {
-						attack(socket, aimAngle);
-					}
-				}
-			}
-		}
-	}
-	
-	// AutoTame - auto tame wolves and spiders
-	if (Settings.AutoTame) {
-		let now = Date.now();
-		if (now - lastAutoTameTime > 200) {
-			lastAutoTameTime = now;
-			let animals = getAnimals();
-			for (let animal of animals) {
-				let d = dist2d(myPlayer, animal);
-				if (d < 200) {
-					// Equip pitchfork if have one
-					if (hasItem(98)) {
-						if (myPlayer.right !== 98) {
-							equipItem(socket, 98);
-						} else {
-							let tameAngle = calcAngle(myPlayer, animal);
-							lookAt(socket, tameAngle);
-							attack(socket, tameAngle);
-						}
-					}
-					break;
-				}
-			}
-		}
-	}
-	
-	// ============ AUTOMATION FEATURES ============
-	
-	// AutoBridge - auto place bridge when G pressed
-	if (Settings.AutoBridge && hasItem(119)) {
-		socket.send(JSON.stringify([10, 119, normalized, օ‌.ᴑⲟⲟoⲟ ? 1 : 0]));
-	}
-	
-	// AutoBook - auto use book if equipped and have one
-	if (Settings.AutoBook && hasItem(90)) {
-		if (myPlayer.right !== 90) {
-			equipItem(socket, 90);
-		}
-	}
-	
-	// AutoCrown - auto equip crown 
-	if (Settings.AutoCrown && hasItem(151)) {
-		// Check if crown buff is active and cooldown passed
-		// Crown needs to be re-equipped periodically
-	}
-	
-	// AutoTotem - place totem automatically
-	if (Settings.AutoTotem) {
-		let totems = getEntitiesByType(38);
-		let hasTeamTotem = false;
-		for (let t of totems) {
-			if (checkAlly(t.ⲟᴑⲟ)) {
-				hasTeamTotem = true;
-				break;
-			}
-		}
-		if (!hasTeamTotem && hasItem(31)) {
-			socket.send(JSON.stringify([10, 31, normalized, 0]));
-		}
-	}
-	
-	// AutoExtractorTake - take items from extractors
-	if (Settings.AutoExtractorTake) {
-		let extractors = getExtractors();
-		for (let ext of extractors) {
-			if (ext.info && (ext.ally || ext.ⲟᴑⲟ === օ‌.id)) {
-				let d = dist2d(myPlayer, ext);
-				if (d < 150) {
-					socket.send(JSON.stringify([9, ext.ⲟᴑⲟ, ext.id]));
-				}
-			}
-		}
-	}
-	
-	// AutoExtractorPut - put items into extractors  
-	if (Settings.AutoExtractorPut) {
-		let extractors = getExtractors();
-		for (let ext of extractors) {
-			if (!ext.info && (ext.ally || ext.ⲟᴑⲟ === օ‌.id)) {
-				let d = dist2d(myPlayer, ext);
-				if (d < 150) {
-					// Find resource to put in
-					for (let resId of [0, 1, 2, 4, 5, 144]) { // wood, stone, gold, diamond, amethyst, reidite
-						if (hasItem(resId)) {
-							socket.send(JSON.stringify([8, resId, 255, ext.ⲟᴑⲟ, ext.id]));
-							break;
-						}
-					}
-				}
-			}
-		}
-	}
-	
-	// AutoBreadTake - take bread from ovens
-	if (Settings.AutoBreadTake) {
-		let ovens = getBreadOvens();
-		for (let oven of ovens) {
-			if (oven.info && (oven.ally || oven.ⲟᴑⲟ === օ‌.id)) {
-				let d = dist2d(myPlayer, oven);
-				if (d < 150) {
-					socket.send(JSON.stringify([9, oven.ⲟᴑⲟ, oven.id]));
-				}
-			}
-		}
-	}
-	
-	// AutoBreadPut - put flour into bread ovens
-	if (Settings.AutoBreadPut) {
-		let ovens = getBreadOvens();
-		for (let oven of ovens) {
-			if (!oven.info && (oven.ally || oven.ⲟᴑⲟ === օ‌.id)) {
-				let d = dist2d(myPlayer, oven);
-				if (d < 150) {
-					// Put flour (item 87)
-					if (hasItem(87)) {
-						socket.send(JSON.stringify([8, 87, 255, oven.ⲟᴑⲟ, oven.id]));
-					}
-				}
-			}
-		}
-	}
-	
-	// AutoSteal - steal from nearby chests
-	if (Settings.autosteal) {
-		let now = Date.now();
-		if (now - lastAutoStealTime > 150) {
-			lastAutoStealTime = now;
-			let chests = getChests();
-			for (let chest of chests) {
-				let d = dist2d(myPlayer, chest);
-				if (d < 200) {
-					if (!chest.lock || chest.ally || chest.ⲟᴑⲟ === օ‌.id) {
-						// Take from chest
-						socket.send(JSON.stringify([9, chest.ⲟᴑⲟ, chest.id]));
-					} else if (Settings.AutoUnlock && hasItem(88)) {
-						// Auto unlock with lockpick
-						socket.send(JSON.stringify([15, chest.ⲟᴑⲟ, chest.id]));
-					}
-				}
-			}
-		}
-	}
-	
-	// AutoSeed - auto plant seeds
-	if (Settings.AutoSeed) {
-		// Plant seeds (item 124) in all directions
-		if (hasItem(124)) {
-			for (let e = 0; e < 26; e++) {
-				socket.send(JSON.stringify([10, 124, 10 * e, 0]));
-				socket.send(JSON.stringify([10, 124, 10 * e, 1]));
-			}
-		}
-	}
-	
-	// AutoIce - auto place ice cubes
-	if (Settings.AutoIce) {
-		// Find and place ice cubes for cooling
-	}
-	
-	// ============ AUTOFARM FEATURE ============
-	
-	if (Settings.AutoFarm) {
-		let farmX = settingConfigs.AutoFarmX;
-		let farmY = settingConfigs.AutoFarmY;
-		let farmX1 = settingConfigs.AutoFarmX1;
-		let farmY1 = settingConfigs.AutoFarmY1;
-		let safeX = settingConfigs.AutoFarmSX;
-		let safeY = settingConfigs.AutoFarmSY;
-		
-		if (farmX !== null && farmY !== null && farmX1 !== null && farmY1 !== null) {
-			let hp = օ‌.oοᴑ.ᴏο; // health
-			
-			// Check if health is low - return to safe point
-			if (hp < 0.3 && safeX && safeY) {
-				moveTowards(socket, safeX, safeY, myX, myY);
 			} else {
-				// Find farmable resources in area
-				let farmArea = {
-					x: Math.min(farmX, farmX1),
-					y: Math.min(farmY, farmY1),
-					width: Math.abs(farmX1 - farmX),
-					height: Math.abs(farmY1 - farmY)
-				};
-				
-				// Find nearest farmable object
-				let target = null;
-				let minDist = Infinity;
-				let targetType = 0; // 1 = wheat/plant, 2 = stone/gold
-				
-				// Iterate through all entity types and find farmable resources
-				// Resource types have info property with values 1-19 for amount remaining
-				// Entity type indices for farmable objects: 1, 2, 3, 31, 37, 39, 40, 43, 44
-				// But since xmree has different indices, iterate through all entity arrays
-				if (ο‍.օᴏ) {
-					for (let typeId = 0; typeId < 100; typeId++) {
-						if (ο‍.օᴏ[typeId]) {
-							for (let res of ο‍.օᴏ[typeId]) {
-								if (res && res.x !== undefined && res.info !== undefined) {
-									// Check if in farm area
-									if (res.x >= farmArea.x && res.x <= farmArea.x + farmArea.width &&
-										res.y >= farmArea.y && res.y <= farmArea.y + farmArea.height) {
-										// Check if has resources (info 1-19 = amount, 10 = empty for some)
-										if (res.info && res.info > 0 && res.info <= 19 && res.info !== 10) {
-											let d = dist2d(myPlayer, res);
-											if (d < minDist) {
-												minDist = d;
-												target = res;
-												// Wheat/plants have info 16-19, others have 1-3
-												targetType = (res.info >= 16) ? 1 : 2;
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-				
-				if (target) {
-					// Move towards and attack
-					if (minDist > 100) {
-						moveTowards(socket, target.x, target.y, myX, myY);
-					} else {
-						// Equip best tool based on target type
-						if (targetType === 1) {
-							// Wheat - use pitchfork
-							if (hasItem(98)) equipItem(socket, 98); // pitchfork
-							else if (hasItem(99)) equipItem(socket, 99); // golden pitchfork
-						} else {
-							// Stone/gold - use pickaxe
-							if (hasItem(55)) equipItem(socket, 55); // reidite pickaxe
-							else if (hasItem(54)) equipItem(socket, 54); // diamond pickaxe
-							else if (hasItem(53)) equipItem(socket, 53); // gold pickaxe
-							else if (hasItem(52)) equipItem(socket, 52); // stone pickaxe
-						}
-						
-						// Attack
-						let farmAngle = calcAngle(myPlayer, target);
-						attack(socket, farmAngle);
-					}
-				}
+				window.AimbotAngle = null;
 			}
+		} else {
+			window.AimbotAngle = null;
 		}
 	}
 	
-	// ============ PATHFINDER FEATURE ============
-	
-	if (Settings.PathFinder) {
-		let targetX = settingConfigs.PathFinderTargetX;
-		let targetY = settingConfigs.PathFinderTargetY;
-		
-		if (targetX !== -1 && targetY !== -1) {
-			let d = dist2d({x: myX, y: myY}, {x: targetX, y: targetY});
-			
-			if (d > 100) {
-				// Move towards target
-				moveTowards(socket, targetX, targetY, myX, myY);
-			} else {
-				// Arrived - put items in chest if enabled
-				if (Settings.PathFinderPutInv) {
-					let chests = getChests();
-					for (let chest of chests) {
-						if (chest.ally || chest.ⲟᴑⲟ === օ‌.id) {
-							let cd = dist2d(myPlayer, chest);
-							if (cd < 150) {
-								// Put all items into chest
-								for (let itemId = 0; itemId < 256; itemId++) {
-									if (hasItem(itemId)) {
-										let amount = Math.min(օ‌.օօ‌.օο‍[itemId], settingConfigs.PutInChestAmount);
-										socket.send(JSON.stringify([8, itemId, amount, chest.ⲟᴑⲟ, chest.id]));
-									}
-								}
-								break;
-							}
-						}
-					}
-				}
-			}
+	if (Settings.AutoSpike) {
+		let time = օ‌.ⲟ‍ᴏ‍ο.timeout.ᴑ‍;
+		if (time !== 0 && 1 - time > .1) return;
+		let type = getBestSpike();
+		if (type === -1) return;
+		Limit.E = true;
+		let pi2 = Math.PI * 2,
+			normalized = Math.floor((օ‌.ᴑoo‌o.angle + pi2) % pi2 * 255 / pi2);
+		for (let e = 1; e < 31; e++) {
+			sendPacketSafe(socket, [17, type, (e + normalized) % 255, 0]);
+			sendPacketSafe(socket, [17, type, (normalized - e + 255) % 255, 0])
 		}
-	}
-	
-	// ============ AUTO EMERALD ============
-	
-	if (Settings.AutoEmerald) {
-		let emeraldIndex = settingConfigs.EmeraldIndex || 0;
-		let targetPos = EmeraldPos[emeraldIndex];
-		
-		if (targetPos) {
-			let d = dist2d({x: myX, y: myY}, {x: targetPos[0], y: targetPos[1]});
-			
-			if (d > 100) {
-				moveTowards(socket, targetPos[0], targetPos[1], myX, myY);
-			} else {
-				// Attack emerald machine
-				let attackAngle;
-				switch (emeraldIndex) {
-					case 0: attackAngle = 105 / 255 * Math.PI * 2; break;
-					case 1: attackAngle = 40 / 255 * Math.PI * 2; break;
-					case 2: attackAngle = 216 / 255 * Math.PI * 2; break;
-				}
-				if (attackAngle !== undefined) {
-					attack(socket, attackAngle);
-				}
-			}
-		}
-	}
-	
-	// ============ AUTO CRAFT / RECYCLE ============
-	
-	// AutoRecycle - auto recycle items when needed
-	if (Settings.AutoRecycle) {
-		let hp = օ‌.oοᴑ.ᴏο; // health
-		let hunger = օ‌.oοᴑ.ᴏᴏo; // hunger
-		
-		// Recycle for food when hungry
-		if (hunger < 0.34) {
-			// Try to recycle items for resources to make food
-			for (let itemId of [156, 154, 157, 162, 158, 163, 159, 164]) { // walls and spikes
-				if (hasItem(itemId)) {
-					recycleItem(socket, itemId);
-					break;
-				}
-			}
-		}
-		
-		// Also craft food if possible
-		if (hp < 0.4 && hasItem(28)) { // bandage
-			useItem(socket, 28);
-		}
-	}
-	
-	// AutoCraft - auto craft items
-	if (Settings.AutoCraft) {
-		let hunger = օ‌.oοᴑ.ᴏᴏo;
-		
-		// Craft food when hungry
-		if (hunger < 0.34) {
-			// Try to craft food items
-			if (hasItem(18)) { // bread
-				useItem(socket, 18);
-			}
-		}
-	}
-}
-
-// Draw tracers to sandworms
-function drawSandwormTracers(ctx, myPlayer) {
-	if (!Settings.SandwormTracers) return;
-	let worms = getSandworms();
-	for (let w of worms) {
-		ctx.beginPath();
-		ctx.strokeStyle = "#FF6600";
-		ctx.lineWidth = 2;
-		ctx.moveTo(myPlayer.x + օ‌.ᴏᴏ‌.x, myPlayer.y + օ‌.ᴏᴏ‌.y);
-		ctx.lineTo(w.x + օ‌.ᴏᴏ‌.x, w.y + օ‌.ᴏᴏ‌.y);
-		ctx.stroke();
-	}
-}
-
-// Draw tracers to krakens
-function drawKrakenTracers(ctx, myPlayer) {
-	if (!Settings.KrakenTracers) return;
-	let krakens = getKrakens();
-	for (let k of krakens) {
-		ctx.beginPath();
-		ctx.strokeStyle = "#00FFFF";
-		ctx.lineWidth = 2;
-		ctx.moveTo(myPlayer.x + օ‌.ᴏᴏ‌.x, myPlayer.y + օ‌.ᴏᴏ‌.y);
-		ctx.lineTo(k.x + օ‌.ᴏᴏ‌.x, k.y + օ‌.ᴏᴏ‌.y);
-		ctx.stroke();
+		sendPacketSafe(socket, [17, type, normalized, 0]);
+		socket.send(JSON.stringify([10, normalized]))
 	}
 }
