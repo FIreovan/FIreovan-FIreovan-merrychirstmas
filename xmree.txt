@@ -20,19 +20,18 @@ function sendPacketSafe(socket, packetData) {
 const units = [0, 84, 89, 77, 78, 74, 90, 75, 105, 106, 92],
 	foods = [201, 294, 298, 291, 317, 315, 319, 236, 208, 231, 226, 238, 229, 299];
 
-// Aimbot helper functions
 function HoldWeapon(weaponId, returnType) {
 	switch (weaponId) {
 		case 34: case 18: case 33: case 15: case 14: case 13: case 12: case 16: case 17:
-			return 2; // Bow
+			return 2;
 		case 57: case 5: case 6: case 30: case 62: case 9: case 0: case 63: case 19:
-			return 1; // Sword
+			return 1;
 		case 64: case 65: case 66: case 67: case 68: case 70: case 69:
-			return 3; // Spear
+			return 3;
 		case 45:
-			if (returnType) return 4; // Hammer
+			if (returnType) return 4;
 		case -1:
-			if (returnType) return 5; // Fist
+			if (returnType) return 5;
 	}
 	return 0;
 }
@@ -47,13 +46,13 @@ function dist2dSQRT(a, b) {
 }
 
 function EnemyToAttack(player, enemies) {
-	let closest = null, minDist = -1;
-	const isBow = HoldWeapon(player.right, false) === 2;
-	for (let i = 0; i < enemies.length; i++) {
-		const e = enemies[i];
-		if (e.ⲟᴑⲟ === player.ⲟᴑⲟ || e.ally) continue; // Skip self and allies
-		const dist = (player.x - e.x) ** 2 + (player.y - e.y) ** 2;
-		if (isBow && dist < 330) continue; // Bow minimum range
+	var closest = null, minDist = -1;
+	var isBow = HoldWeapon(player.right, false) === 2;
+	for (var i = 0; i < enemies.length; i++) {
+		var e = enemies[i];
+		if (e.ⲟᴑⲟ === player.ⲟᴑⲟ || e.ally) continue;
+		var dist = (player.x - e.x) * (player.x - e.x) + (player.y - e.y) * (player.y - e.y);
+		if (isBow && dist < 330) continue;
 		if (minDist === -1 || dist < minDist) {
 			minDist = dist;
 			closest = e;
@@ -81368,37 +81367,35 @@ function getBestSpike() {
 }
 
 function LouxLoop() {
-	let socket = օoо.ⲟⲟⲟ;
-	let myPlayer = ο‍.oоⲟ[օ‌.id * ο‍.oօoⲟ‍];
+	var socket = օoо.ⲟⲟⲟ;
+	var myPlayer = ο‍.oоⲟ[օ‌.id * ο‍.oօoⲟ‍];
 	if (!socket || socket.readyState !== WebSocket.OPEN) return;
 	if (!myPlayer && !Settings.Spectator) return socket.send(JSON.stringify([29]));
 	if (!myPlayer) return;
-	
-	// Aimbot
 	if (Settings.Aimbot) {
-		let weaponType = HoldWeapon(myPlayer.right, true);
-		let range = 0;
+		var weaponType = HoldWeapon(myPlayer.right, true);
+		var range = 0;
 		switch (weaponType) {
-			case 1: range = 180; break; // Sword
-			case 2: range = 280; break; // Bow
-			case 3: range = 600; break; // Spear
-			case 4: range = 130; break; // Hammer
-			case 5: range = 110; break; // Fist
+			case 1: range = 180; break;
+			case 2: range = 280; break;
+			case 3: range = 600; break;
+			case 4: range = 130; break;
+			case 5: range = 110; break;
 		}
 		if (range > 0) {
-			let players = ο‍.օᴏ[0]; // Player unit type is 0
-			let enemy = EnemyToAttack(myPlayer, players);
+			var players = ο‍.օᴏ[0];
+			var enemy = EnemyToAttack(myPlayer, players);
 			if (enemy) {
-				let distance = dist2dSQRT(myPlayer, enemy);
+				var distance = dist2dSQRT(myPlayer, enemy);
 				if (distance <= range) {
-					let angle = calcAngle(myPlayer, enemy);
+					var angle = calcAngle(myPlayer, enemy);
 					window.AimbotAngle = angle;
-					let pi2 = 2 * Math.PI;
-					let normalized = Math.floor((angle + pi2) % pi2 * 255 / pi2);
-					socket.send(JSON.stringify([3, normalized])); // Look at target
+					var pi2 = 2 * Math.PI;
+					var normalized = Math.floor((angle + pi2) % pi2 * 255 / pi2);
+					socket.send(JSON.stringify([3, normalized]));
 					if (distance <= range - 20) {
-						socket.send(JSON.stringify([4, normalized])); // Attack
-						socket.send(JSON.stringify([14])); // Confirm attack
+						socket.send(JSON.stringify([4, normalized]));
+						socket.send(JSON.stringify([14]));
 					}
 				} else {
 					window.AimbotAngle = null;
@@ -81410,7 +81407,6 @@ function LouxLoop() {
 			window.AimbotAngle = null;
 		}
 	}
-	
 	if (Settings.AutoSpike) {
 		let time = օ‌.ⲟ‍ᴏ‍ο.timeout.ᴑ‍;
 		if (time !== 0 && 1 - time > .1) return;
